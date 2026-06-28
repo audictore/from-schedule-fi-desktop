@@ -44,7 +44,9 @@ jobs:
         run: npm ci
 
       - name: Construir el instalador (electron-builder)
-        run: npm run build:win
+        # --publish never: solo construir el .exe, sin intentar publicarlo en un release
+        # (lo descargamos como artefacto). El auto-publish/auto-update es una fase posterior.
+        run: npm run build:win -- --publish never
         env:
           # Sin certificado => build sin firmar (SmartScreen mostrará "editor desconocido").
           # Para firmar, agrega los secrets CSC_LINK y CSC_KEY_PASSWORD en GitHub.
