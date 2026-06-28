@@ -8,6 +8,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   dialogOpen: (options) => ipcRenderer.invoke('dialog-open', options),
   dialogSave: (options) => ipcRenderer.invoke('dialog-save', options),
+  fileWrite: (filePath, content) => ipcRenderer.invoke('file-write', filePath, content),
+  fileRead: (filePath) => ipcRenderer.invoke('file-read', filePath),
   onMenuOpen: (callback) => ipcRenderer.on('menu-open', callback),
   onMenuSave: (callback) => ipcRenderer.on('menu-save', callback)
 });

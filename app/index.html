@@ -444,6 +444,7 @@
 let MAPA_DOCENTES = new Map(), MAPA_GRUPOS = new Map(), PLANTILLAS_MATERIAS = [];
 let LOG_CAMBIOS = [];
 let wbCarga = null, wbDisp = null;
+let ultimoHorario = null;   // último horario generado (para guardar el proyecto)
 
 /** Devuelve true si el bloque corresponde a una materia de inglés. */
 /** Inglés especial: requiere pre-asignación sincronizada y bloques de 1h.
@@ -1706,6 +1707,7 @@ async function ejecutarMotorOptimo() {
         detener();
         if (!r.ok) { out.innerHTML = ESTILO_CSP + `<div class="csp-box csp-err">Error de CP-SAT: ${String(r.error || 'desconocido').replace(/</g, '&lt;')}</div>`; return; }
         const completo = r.colocadas === r.total;
+        ultimoHorario = r.horario;   // recordar para Guardar proyecto
         try {
             aplicarHorarioOptimo(r.horario);
             mostrarDesglose();
@@ -1730,6 +1732,75 @@ const _btnOptimo = document.getElementById("button_optimo");
 if (_btnOptimo) {
     _btnOptimo.onclick = ejecutarMotorOptimo;
     _btnOptimo.title = 'Motor ÓPTIMO CP-SAT: 354/354 + patrón didáctico. Tarda ~5 min.';
+}
+
+// ── Guardar / abrir proyecto (.fsfi) — solo en la app de escritorio ──────────
+// Un proyecto guarda los dos Excel de entrada (Carga + Disponibilidades), la
+// configuración de aulas y el último horario generado, todo en un archivo JSON.
+// Al abrirlo se reconstruye el modelo con el mismo pipeline que una carga normal.
+async function guardarProyecto() {
+    if (!window.electronAPI) return;
+    const out = document.getElementById('span_error');
+    if (!wbCarga || !wbDisp) { alert('Primero carga la Carga Académica y las Disponibilidades.'); return; }
+    try {
+        const proyecto = {
+            app: 'From Schedule FI', version: 1,
+            guardado: new Date().toISOString(),
+            cargaB64: XLSX.write(wbCarga, { type: 'base64', bookType: 'xlsx' }),
+            dispB64: XLSX.write(wbDisp, { type: 'base64', bookType: 'xlsx' }),
+            aulas: datosAulas,
+            horario: ultimoHorario
+        };
+        const res = await window.electronAPI.dialogSave({
+            title: 'Guardar proyecto',
+            defaultPath: 'horario.fsfi',
+            filters: [{ name: 'Proyecto From Schedule FI', extensions: ['fsfi'] }]
+        });
+        if (res.canceled || !res.filePath) return;
+        const w = await window.electronAPI.fileWrite(res.filePath, JSON.stringify(proyecto));
+        if (w.ok) { out.innerText = '✔ Proyecto guardado: ' + res.filePath; out.style.color = 'green'; }
+        else { out.innerText = '✖ No se pudo guardar: ' + w.error; out.style.color = 'red'; }
+    } catch (e) {
+        out.innerText = '✖ Error al guardar el proyecto: ' + e.message; out.style.color = 'red';
+    }
+}
+
+async function abrirProyecto() {
+    if (!window.electronAPI) return;
+    const out = document.getElementById('span_error');
+    try {
+        const res = await window.electronAPI.dialogOpen({
+            title: 'Abrir proyecto',
+            filters: [{ name: 'Proyecto From Schedule FI', extensions: ['fsfi'] }],
+            properties: ['openFile']
+        });
+        if (res.canceled || !res.filePaths || !res.filePaths.length) return;
+        const rd = await window.electronAPI.fileRead(res.filePaths[0]);
+        if (!rd.ok) { out.innerText = '✖ No se pudo leer: ' + rd.error; out.style.color = 'red'; return; }
+        const p = JSON.parse(rd.content);
+        if (!p || !p.cargaB64 || !p.dispB64) { alert('El archivo no es un proyecto válido de From Schedule FI.'); return; }
+        wbCarga = XLSX.read(p.cargaB64, { type: 'base64' });
+        wbDisp = XLSX.read(p.dispB64, { type: 'base64' });
+        datosAulas = p.aulas || { aulas: [], asignaciones: {}, pools: {}, poolCapacidad: {} };
+        ultimoHorario = (p.horario && p.horario.length) ? p.horario : null;
+        parsearTodo();   // reconstruye modelo + muestra desglose (igual que una carga normal)
+        if (ultimoHorario) {
+            aplicarHorarioOptimo(ultimoHorario);
+            mostrarDesglose();
+            exportarExcel();
+            out.innerText = '✔ Proyecto abierto (con horario generado).';
+        } else {
+            out.innerText = '✔ Proyecto abierto (sin horario aún — pulsa Generar ÓPTIMO).';
+        }
+        out.style.color = 'green';
+    } catch (e) {
+        out.innerText = '✖ Error al abrir el proyecto: ' + e.message; out.style.color = 'red';
+    }
+}
+
+if (window.electronAPI) {
+    if (window.electronAPI.onMenuSave) window.electronAPI.onMenuSave(() => guardarProyecto());
+    if (window.electronAPI.onMenuOpen) window.electronAPI.onMenuOpen(() => abrirProyecto());
 }
 
     // ── Auto-expandir caja de errores cuando el contenido desborda ───────────

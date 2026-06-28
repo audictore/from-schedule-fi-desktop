@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { solveCPSAT, cancelSolve } = require('./solver');
 
 let mainWindow;
@@ -95,4 +96,22 @@ ipcMain.handle('dialog-open', async (event, options) => {
 
 ipcMain.handle('dialog-save', async (event, options) => {
   return dialog.showSaveDialog(mainWindow, options);
+});
+
+ipcMain.handle('file-write', async (event, filePath, content) => {
+  try {
+    await fs.promises.writeFile(filePath, content, 'utf8');
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('file-read', async (event, filePath) => {
+  try {
+    const content = await fs.promises.readFile(filePath, 'utf8');
+    return { ok: true, content };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
 });
