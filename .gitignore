@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Salidas de build
+dist/
+solver/dist/
+solver/build/
+solver/__pycache__/
+*.pyc
+
+# Datos de depuración capturados en runtime (no deben versionarse ni distribuirse)
+solver/last_input.json
+solver/datos_debug.json
+
+# Iconos generados por scripts/make_icon.py (los regenera el pipeline)
+assets/icon.ico
+assets/icon.png
+
+# Sistema
+.DS_Store
+Thumbs.db

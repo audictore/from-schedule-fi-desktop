@@ -1,0 +1,56 @@
+{
+  "name": "from-schedule-fi",
+  "version": "1.0.0",
+  "description": "Generador de horarios universitarios — From Schedule FI",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "author": "From Industries",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.0.0"
+  },
+  "dependencies": {
+    "xlsx-js-style": "^1.2.0"
+  },
+  "build": {
+    "appId": "com.fromindustries.schedule",
+    "productName": "From Schedule FI",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "app/**/*",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "solver/dist/solver_ipc/",
+        "to": "solver",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  }
+}

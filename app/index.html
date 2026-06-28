@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Schedule FI</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+        :root {
+            /* ── Palette ── */
+            --color-yellow: #FCB814;
+            --color-black: #221F20;
+            --color-ghost-white: #F3F7FF;
+            --color-cerulean: #3D7B93;
+            --color-dim-gray: #636466;
+            --color-tomato: #F26649;
+            --color-celadon: #81C99C;
+            --color-gray-olive: #939598;
+            --color-soft-periwinkle: #8781BD;
+
+            /* ── Typography ── */
+            --font-roboto-mono: "Roboto Mono", monospace;
+            --fs-xs:   0.7rem;
+            --fs-sm:   0.8rem;
+            --fs-base: 0.875rem;
+            --fs-md:   1rem;
+            --fs-lg:   1.15rem;
+
+            /* ── Spacing (4px grid) ── */
+            --sp-1:  0.25rem;
+            --sp-2:  0.5rem;
+            --sp-3:  0.75rem;
+            --sp-4:  1rem;
+            --sp-6:  1.5rem;
+            --sp-8:  2rem;
+            --sp-12: 3rem;
+
+            /* ── Neo-brutalista geometry ── */
+            --borde-fuerte: 3px solid var(--color-black);
+            --borde-medio:  2px solid var(--color-black);
+            --borde-fino:   1px solid var(--color-black);
+            --sombra-lg: 5px 5px 0 0 var(--color-gray-olive);
+            --sombra-sm: 3px 3px 0 0 var(--color-black);
+
+            /* ── Layout tokens ── */
+            --header-h: 3.5rem;
+            --sidebar-w: 240px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; border-radius: 0 !important; }
+
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            font-family: var(--font-roboto-mono);
+            background: var(--color-ghost-white);
+            color: var(--color-black);
+        }
+
+        /* ── Header ─────────────────────────────────────────── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            height: var(--header-h);
+            background: var(--color-yellow);
+            border-bottom: var(--borde-fuerte);
+        }
+
+        header nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 var(--sp-8);
+        }
+
+        header nav ul {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-6);
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        header nav ul a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--color-black);
+            font-family: var(--font-roboto-mono);
+            font-weight: 700;
+            font-size: var(--fs-sm);
+        }
+
+        header nav ul:last-child a:first-child {
+            box-shadow: inset 0 -3px 0 0 var(--color-black);
+            padding-bottom: var(--sp-1);
+        }
+
+        header a img { height: 2rem; }
+
+        /* ── App layout (2 columns) ─────────────────────────── */
+        .app-layout {
+            display: flex;
+            gap: var(--sp-8);
+            flex: 1 1 auto;
+            padding: var(--sp-6);
+            background: var(--color-ghost-white);
+        }
+
+        /* ── Sidebar (left column) ──────────────────────────── */
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-3);
+            flex: 0 0 var(--sidebar-w);
+            position: sticky;
+            top: calc(var(--header-h) + var(--sp-6));
+            padding: 0;
+            margin: 0;
+            background: transparent;
+        }
+
+        main input[type="file"] {
+            position: absolute;
+            width: 1px; height: 1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        main .label_carga,
+        main .label_disp,
+        main .label_aulas,
+        main .button_accion {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: var(--sp-12);
+            padding: var(--sp-3) var(--sp-4);
+            background: var(--color-yellow);
+            color: var(--color-black);
+            font-family: var(--font-roboto-mono);
+            font-size: var(--fs-base);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: var(--borde-fuerte);
+            box-shadow: var(--sombra-lg);
+            cursor: pointer;
+            transition: transform 0.06s ease, box-shadow 0.06s ease;
+        }
+
+        main .label_carga:hover,
+        main .label_disp:hover,
+        main .label_aulas:hover,
+        main .button_accion:hover {
+            transform: translate(5px, 5px);
+            box-shadow: 0 0 0 0 var(--color-gray-olive);
+            background: var(--color-black);
+            color: var(--color-yellow);
+        }
+
+        main label span { font-size: inherit; font-weight: inherit; }
+
+        /* ── Panel info (right column) ──────────────────────── */
+        .panel-info {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-6);
+        }
+
+        .span_error {
+            font-family: var(--font-roboto-mono);
+            font-size: var(--fs-base);
+            background: #fff;
+            border: var(--borde-fuerte);
+            box-shadow: var(--sombra-lg);
+            padding: var(--sp-4) var(--sp-6);
+            max-height: 28vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .panel-info > section { margin: 0; }
+
+        /* ── Desglose ───────────────────────────────────────── */
+        #seccion_desglose {
+            display: none;
+            width: 100%;
+            padding: var(--sp-6);
+            background: var(--color-ghost-white);
+        }
+
+        #seccion_desglose h2 {
+            font-family: var(--font-roboto-mono);
+            font-size: var(--fs-lg);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--color-black);
+            margin: 0 0 var(--sp-6) 0;
+            padding-bottom: var(--sp-3);
+            border-bottom: 3px solid var(--color-yellow);
+        }
+
+        .desglose-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-roboto-mono);
+            font-size: var(--fs-sm);
+            border: var(--borde-fuerte);
+        }
+
+        .desglose-tabla thead th {
+            background: var(--color-black);
+            color: var(--color-yellow);
+            padding: var(--sp-3) var(--sp-4);
+            text-align: left;
+            font-size: var(--fs-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+        }
+        .desglose-tabla thead th:last-child { text-align: right; }
+
+        .desglose-tabla tr.doc-header td {
+            background: var(--color-yellow);
+            color: var(--color-black);
+            font-weight: 800;
+            padding: var(--sp-3) var(--sp-4);
+            font-size: var(--fs-base);
+            border-top: var(--borde-fuerte);
+        }
+        .desglose-tabla tr.doc-header:first-child td { border-top: none; }
+
+        .desglose-tabla tr.asig-row td {
+            padding: var(--sp-2) var(--sp-4);
+            border-bottom: 1px solid #eaeaea;
+            color: var(--color-black);
+            background: #fff;
+            vertical-align: middle;
+        }
+        .desglose-tabla tr.asig-row:hover td { background: #FFF8E0; }
+
+        .desglose-tabla .col-hrs {
+            text-align: right;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Swatch de color materia */
+        .swatch {
+            display: inline-block;
+            width: 0.7rem;
+            height: 0.7rem;
+            vertical-align: middle;
+            margin-right: var(--sp-2);
+            border: 1px solid rgba(0,0,0,0.12);
+        }
+
+        /* Badge base */
+        .badge-cat {
+            display: inline-block;
+            padding: 0.15rem var(--sp-2);
+            font-family: var(--font-roboto-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-left: var(--sp-2);
+            vertical-align: middle;
+            border: var(--borde-medio);
+        }
+        .badge-ptc { background: var(--color-cerulean); color: #fff; }
+        .badge-pa  { background: var(--color-soft-periwinkle); color: #fff; }
+
+        /* Badge turno (en doc-header): estilo invertido negro/amarillo */
+        .badge-turno {
+            display: inline-block;
+            padding: 0.15rem var(--sp-2);
+            font-family: var(--font-roboto-mono);
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-left: var(--sp-3);
+            vertical-align: middle;
+            background: var(--color-black);
+            color: var(--color-yellow);
+            border: var(--borde-medio);
+        }
+
+        /* ── Footer ─────────────────────────────────────────── */
+        footer {
+            background: var(--color-black);
+            border-top: var(--borde-fuerte);
+            padding: var(--sp-8) var(--sp-8) var(--sp-6);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--sp-4);
+        }
+
+        footer a.a_que_es {
+            font-family: var(--font-roboto-mono);
+            font-size: var(--fs-sm);
+            font-weight: 700;
+            color: var(--color-ghost-white);
+            text-decoration: none;
+            margin-right: auto;
+        }
+        footer a.a_que_es:hover { color: var(--color-yellow); }
+
+        footer img.img_logo_FI { height: 1.5rem; }
+        footer a img { width: 1.5rem; height: 1.5rem; opacity: 0.7; transition: opacity 0.15s; }
+        footer a:hover img { opacity: 1; }
+
+        /* ── CSP result box ─────────────────────────────────── */
+        .csp-box { box-shadow: var(--sombra-sm) !important; }
+
+        /* ── Panels inside status box ───────────────────────── */
+        #panel_forzado_disp, #panel_imposibles, #panel_expansion_dias {
+            font-size: var(--fs-sm) !important; line-height: 1.4; white-space: normal !important;
+        }
+        #panel_forzado_disp h3, #panel_imposibles h3, #panel_expansion_dias h3 {
+            margin: 0 0 var(--sp-2) !important; font-size: var(--fs-base) !important;
+        }
+        #panel_forzado_disp p, #panel_imposibles p, #panel_expansion_dias p {
+            margin: 0 0 var(--sp-3) !important; line-height: 1.4;
+        }
+        #panel_forzado_disp label, #panel_imposibles label, #panel_expansion_dias label {
+            padding: var(--sp-1) 0 !important; gap: var(--sp-2) !important;
+        }
+        #panel_forzado_disp label > span, #panel_imposibles label > span, #panel_expansion_dias label > span {
+            flex: 1 1 auto; min-width: 0;
+        }
+
+        /* ── Responsive ─────────────────────────────────────── */
+        @media (max-width: 860px) {
+            header nav { padding: 0 var(--sp-4); }
+            header nav ul { gap: var(--sp-3); }
+            .app-layout { flex-direction: column; padding: var(--sp-4); gap: var(--sp-4); }
+            main { position: static; flex: 0 0 auto; width: 100%; }
+            .span_error { max-height: 40vh; overflow-x: auto; }
+            footer { padding: var(--sp-6) var(--sp-4); }
+            #desglose_contenido { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            table.csp-grid { font-size: 0.65rem; }
+            table.csp-grid th, table.csp-grid td { min-width: 1.8rem; padding: 0.15rem 0.25rem; }
+        }
+
+        @media (max-width: 480px) {
+            :root { --header-h: 3rem; }
+            header nav { padding: 0 var(--sp-3); }
+            header nav ul { gap: var(--sp-2); }
+            header nav ul a { font-size: var(--fs-xs); }
+            header a img { height: 1.5rem; }
+            .app-layout { padding: var(--sp-2); gap: var(--sp-3); }
+            main .label_carga, main .label_disp, main .label_aulas, main .button_accion {
+                font-size: var(--fs-sm); min-height: 2.75rem;
+                padding: var(--sp-2) var(--sp-3); box-shadow: var(--sombra-sm);
+            }
+            .span_error { font-size: var(--fs-sm); padding: var(--sp-3); }
+            #seccion_desglose { padding: var(--sp-3); }
+            #seccion_desglose h2 { font-size: var(--fs-base); letter-spacing: 0.5px; }
+            .desglose-tabla { font-size: var(--fs-xs); }
+            .desglose-tabla thead th { padding: var(--sp-2); }
+            .desglose-tabla tr.doc-header td { padding: var(--sp-2) var(--sp-3); font-size: var(--fs-sm); }
+            .desglose-tabla tr.asig-row td { padding: var(--sp-1) var(--sp-2); }
+            .badge-cat, .badge-turno { font-size: 0.55rem; padding: 0.1rem var(--sp-1); }
+            footer { flex-direction: column; align-items: flex-start; padding: var(--sp-4) var(--sp-3); gap: var(--sp-3); }
+            footer a.a_que_es { margin-right: 0; }
+        }
+    </style>
+
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <a href="index.html"><img src="assets/FI-LOGO-BRUTO-BLACK.svg" alt="LOGO"></a>
+            </ul>
+            <ul>
+                <a href="./index.html">Generador</a>
+                <a href="./manual.html">Manual</a>
+            </ul>
+        </nav>
+        
+    </header>
+
+    <div class="app-layout">
+
+        <main>
+            <input class="input_excel" id="input_carga" type="file" accept=".xlsx,.xls">
+            <label for="input_carga" class="label_carga">
+                <span>Carga Académica</span>
+            </label>
+            <input class="input_excel" id="input_disp" type="file" accept=".xlsx,.xls">
+            <label for="input_disp" class="label_disp">
+                <span>Disponibilidades</span>
+            </label>
+            <input class="input_excel" id="input_aulas" type="file" accept=".xlsx,.xls">
+            <label for="input_aulas" class="label_aulas">
+                <span>Aulas (opcional)</span>
+            </label>
+            <button class="button_accion" id="button_optimo" title="Motor ÓPTIMO CP-SAT: garantiza el máximo de horas colocadas.">Generar ÓPTIMO ✦</button>
+        </main>
+
+        <div class="panel-info">
+            <div class="span_error" id="span_error" style="color:var(--color-dim-gray);font-weight:normal">⌛ Esperando archivos: <strong>Carga Académica</strong> y <strong>Disponibilidades</strong>.</div>
+
+            <section id="seccion_desglose">
+                <h2>Desglose · Grupo &mdash; Materia &mdash; Horas</h2>
+                <div id="desglose_contenido"></div>
+            </section>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <a class="a_que_es" href="./que_es.html">¿Que es FROM SCHEDULE?</a>
+        <img class="img_logo_FI" src="./assets/LOGO-FI-BRUTO-YELLOW.png" alt="">
+        <a class="a_instagram" href="https://www.instagram.com/fromindustries?igsh=MWRkNHZ6MWI5OWN0Yg=="><img class="img_instagram" src="./assets/logotipo-de-instagram.png" alt=""></a>
+        <a class="a_mail" href=""><img class="img_mail" src="./assets/correo-electronico.png" alt=""></a>
+    </footer>
+
+    <script src="../node_modules/xlsx-js-style/dist/xlsx.bundle.js"></script>
+    <script>
+
+        const diasSemana = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+let MAPA_DOCENTES = new Map(), MAPA_GRUPOS = new Map(), PLANTILLAS_MATERIAS = [];
+let LOG_CAMBIOS = [];
+let wbCarga = null, wbDisp = null;
+
+/** Devuelve true si el bloque corresponde a una materia de inglés. */
+/** Inglés especial: requiere pre-asignación sincronizada y bloques de 1h.
+ *  Inglés 8 e Inglés 9 son materias normales — se excluyen del trato especial. */
+function esIngles(b) {
+    const nm = b.materia.nombre_materia.toUpperCase()
+        .normalize("NFD").replace(/[̀-ͯ]/g, "");
+    if (/INGLES\s*[89]/.test(nm)) return false;
+    return nm.includes("INGLES");
+}
+
+/** Máximo de sesiones de una misma materia por día/grupo.
+ *  Inglés 1-7 se parte en 8-9 bloques de 1h pero la semana solo tiene 6 días:
+ *  con límite 1 sería matemáticamente incompletable. El coordinador permite
+ *  hasta 3h de inglés el mismo día (todas juntas, p.ej. 7:00-9:00) cuando la
+ *  disponibilidad del docente está concentrada en pocos días → límite 3.
+ *  Tutorías se splittean en bloques de 1h por carga → necesitan 2/día para
+ *  caber sin colgar piezas (mismo patrón que inglés 1-7).
+ *  Las demás materias (incluido inglés 8/9) conservan el límite duro de 1. */
+function esTutoria(b) {
+    const nm = b.materia.nombre_materia.toUpperCase()
+        .normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return nm.includes("TUTORIA");
+}
+function maxSesionesPorDia(b) {
+    if (esIngles(b))  return 3;
+    if (esTutoria(b)) return 2;
+    return 1;
+}
+
+// ─── Paleta de colores por materia (Excel + vista desglose) ────────────────
+// Colores de nivel-200 de Material Design, ordenados por máxima distancia
+// perceptual entre sí: los primeros 10 cubren todo el espectro, garantizando
+// que grupos con ≤10 materias nunca tengan dos colores parecidos.
+const PALETA_MATERIAS = [
+    "EF9A9A",  // 01 rojo         Red 200
+    "90CAF9",  // 02 azul         Blue 200
+    "FFE082",  // 03 ámbar        Amber 200
+    "A5D6A7",  // 04 verde        Green 200
+    "CE93D8",  // 05 púrpura      Purple 200
+    "FFAB91",  // 06 naranja      Deep Orange 200
+    "80CBC4",  // 07 teal         Teal 200
+    "F48FB1",  // 08 rosa         Pink 200
+    "E6EE9C",  // 09 lima         Lime 200
+    "9FA8DA",  // 10 índigo       Indigo 200
+    "FFF59D",  // 11 amarillo     Yellow 200
+    "80DEEA",  // 12 cian         Cyan 200
+    "C5E1A5",  // 13 verde claro  Light Green 200
+    "B39DDB",  // 14 violeta      Deep Purple 200
+    "FFCC80",  // 15 naranja cl.  Orange 200
+    "81D4FA",  // 16 azul claro   Light Blue 200
+    "BCAAA4",  // 17 café         Brown 200
+    "F06292",  // 18 rosa med.    Pink 300
+    "B0BEC5",  // 19 gris azul    Blue Grey 200
+    "AED581",  // 20 verde lima   Light Green 300
+];
+
+/**
+ * Devuelve un color hex de 6 dígitos (sin #) para la materia indicada.
+ * Usa hash djb2 sobre el nombre normalizado → siempre el mismo color para la misma materia.
+ */
+function colorParaMateria(nombre) {
+    let h = 5381;
+    const s = nombre.toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h) ^ s.charCodeAt(i);
+    return PALETA_MATERIAS[Math.abs(h) % PALETA_MATERIAS.length];
+}
+
+class Materia {
+    constructor(nombre, horas, grado, turno, tsu) {
+        this.nombre_materia = nombre;
+        this.horas_materia = parseInt(horas);
+        this.grado_materia = grado;
+        this.turno_materia = turno;
+        this.tsu = (tsu && tsu !== 'NA') ? tsu : null;
+        this.docente = null;
+        this.grupo = null;
+    }
+}
+
+class Docente {
+    constructor(n, t, e, cat) {
+        this.nombre_docente = n.trim();
+        this.tipo_docente = parseInt(t);
+        this.categoria = cat || (parseInt(t) === 2 ? 'PA' : 'PTC');
+        this.horas_extra_clase = parseInt(e) || 0;
+        this.horas_carga = 0;
+        this.disponibilidad = {};
+        this.asignado = {};
+        this.diasActivos = new Set();
+        this.turnosAsignados = new Set();
+        this.esDocenteIngles = false; // true si enseña inglés → puede ir toda la semana
+        diasSemana.forEach(d => {
+            this.disponibilidad[d] = new Set();
+            this.asignado[d] = {};
+        });
+    }
+    reset() {
+        this.asignado = {};
+        this.diasActivos = new Set();
+        diasSemana.forEach(d => { this.asignado[d] = {}; });
+    }
+    calcularMaxDias() {
+        if (this.tipo_docente === 2) { // PA
+            // Regla institucional: carga 2-9 → 2 días, 10-20 → 3 días, 21+ → 4 días
+            let total = this.horas_carga + this.horas_extra_clase;
+            if (total <= 9)  return 2;
+            if (total <= 20) return 3;
+            return 4;
+        }
+        return 6; // PTC u otro
+    }
+}
+
+class Grupo {
+    constructor(n, t) { this.nombre_grupo = n.trim(); this.turno = t.toLowerCase(); this.bloques = []; this.reset(); }
+    reset() {
+        this.horario = {}; this.sesionesDia = {};
+        this.baseHoras = (this.turno === "matutino") ? [7,8,9,10,11,12,13,14,15,16] : [12,13,14,15,16,17,18,19,20];
+        diasSemana.forEach(d => {
+            this.horario[d] = {};
+            this.sesionesDia[d] = {};
+            this.baseHoras.forEach(h => this.horario[d][h] = null);
+        });
+    }
+}
+
+function normalizarNombre(s) {
+        return s.trim().normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
+function buscarDocentePorHoja(sheetName) {
+    let norm = normalizarNombre(sheetName);
+    for (let [name, docente] of MAPA_DOCENTES) {
+        if (normalizarNombre(name) === norm) return docente;
+    }
+    for (let [name, docente] of MAPA_DOCENTES) {
+        let normName = normalizarNombre(name);
+        if (normName.startsWith(norm) || norm.startsWith(normName)) return docente;
+    }
+    return null;
+}
+
+function parsearLineaAsignatura(line) {
+    let match = line.match(/^(.+?)\s+(\d+)[°º]\s*(.+?)\s*\((\d+)\s*hrs?\)\s*$/i);
+    if (!match) return null;
+
+    let nombreMateria = match[1].trim();
+    let grado = parseInt(match[2]);
+    let middlePart = match[3].trim();
+    let horas = parseInt(match[4]);
+
+    let especialidad = null;
+    if (/\bGCH\b/i.test(middlePart)) {
+        especialidad = 'GCH';
+        middlePart = middlePart.replace(/\bGCH\b/i, '').trim();
+    } else if (/\bEFEP\b/i.test(middlePart)) {
+        especialidad = 'EFEP';
+        middlePart = middlePart.replace(/\bEFEP\b/i, '').trim();
+    }
+
+    // Specialty groups (GCH/EFEP) only exist in 5th semester.
+    // "Ingles 5 8°a GCH" means English level 5 for group 5a GCH, not 8a GCH.
+    if (especialidad) {
+        let materiaNum = nombreMateria.match(/(\d+)\s*$/);
+        if (materiaNum) grado = parseInt(materiaNum[1]);
+    }
+
+    let grupos = middlePart.match(/[a-c]/gi);
+    if (!grupos || grupos.length === 0) return null;
+    grupos = grupos.map(g => g.toLowerCase());
+
+    return { nombreMateria, grado, grupos, especialidad, horas };
+}
+
+function parsearCargaAcademica(wb) {
+    let sheet = wb.Sheets[wb.SheetNames[0]];
+    // Los archivos reales tienen filas institucionales antes del encabezado real.
+    // Detectamos dinámicamente la fila que contiene "Profesor" y la usamos como header.
+    let rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+    let headerIdx = rawRows.findIndex(row =>
+        row.some(cell => String(cell).trim() === 'Profesor')
+    );
+    let rows = XLSX.utils.sheet_to_json(sheet, {
+        range: headerIdx >= 0 ? headerIdx : 0,
+        defval: ''
+    });
+    let asignacionesTemp = [];
+
+    rows.forEach(row => {
+        let nombre = String(row['Profesor'] || '').trim();
+        if (!nombre) return;
+
+        let categoriaRaw = row['CATEGORÍA'] || row['CATEGORIA'] || '';
+        let categoria = String(categoriaRaw).trim().toUpperCase();
+        let tipo = (categoria === 'PA') ? 2 : 1;
+
+        if (!MAPA_DOCENTES.has(nombre)) {
+            MAPA_DOCENTES.set(nombre, new Docente(nombre, tipo, 0, categoria));
+        }
+        let docente = MAPA_DOCENTES.get(nombre);
+
+        let asigText = String(row['Asignatura'] || '');
+        let lines = asigText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+        lines.forEach(line => {
+            let parsed = parsearLineaAsignatura(line);
+            if (!parsed) return;
+
+            let horasPerGrupo = Math.round(parsed.horas / parsed.grupos.length);
+
+            parsed.grupos.forEach(letra => {
+                let nombreGrupo = parsed.especialidad
+                    ? `${parsed.grado}${letra} ${parsed.especialidad}`
+                    : `${parsed.grado}${letra}`;
+                let turno = parsed.grado <= 4 ? 'matutino' : 'vespertino';
+
+                if (!MAPA_GRUPOS.has(nombreGrupo)) {
+                    MAPA_GRUPOS.set(nombreGrupo, new Grupo(nombreGrupo, turno));
+                }
+
+                docente.horas_carga += horasPerGrupo;
+                docente.turnosAsignados.add(turno);
+
+                asignacionesTemp.push({
+                    docente: nombre,
+                    grupo: nombreGrupo,
+                    materia: parsed.nombreMateria,
+                    horas: horasPerGrupo,
+                    grado: parsed.grado,
+                    turno: turno
+                });
+            });
+        });
+    });
+
+    MAPA_DOCENTES.forEach(d => { d.maxDias = d.calcularMaxDias(); });
+
+    let asignacionesExitosas = 0;
+    asignacionesTemp.forEach(asig => {
+        let g = MAPA_GRUPOS.get(asig.grupo);
+        let d = MAPA_DOCENTES.get(asig.docente);
+        if (!g || !d) return;
+
+        let c = new Materia(asig.materia, asig.horas, asig.grado, asig.turno, null);
+        c.grupo = g; c.docente = d;
+
+
+        let h = c.horas_materia;
+        let nm = c.nombre_materia.toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+        let desglose = [];
+
+        // Inglés 8 e Inglés 9 son materias normales: usan el split regular (2, 2, 1...)
+        const esInglesEspecial = nm.includes("INGLES") && !/INGLES\s*[89]/.test(nm);
+        // Inglés especial y tutoría: bloques de 1h para sincronizar por cuatrimestre
+        if (esInglesEspecial || nm.includes("TUTORIA") || c.tsu) {
+            if (esInglesEspecial) d.esDocenteIngles = true; // días ilimitados solo para inglés regular
+            for (let i = 0; i < h; i++) desglose.push(1);
+        } else {
+            // Partición según los DÍAS DE ASISTENCIA del docente: con la regla de
+            // 1 sesión por materia/día, un docente de 2 días no puede dar una
+            // materia de 7h en [2,2,2,1] (necesitaría 4 días) → usa sesiones más
+            // largas. Tablas del método tradicional validado:
+            //   2 días: 7→[4,3]   6→[3,3]   5→[3,2]   4→[2,2] 3→[2,1] 2→[1,1]
+            //   3 días: 7→[3,2,2] 6→[2,2,2] 5→[2,2,1] 4→[2,2] 3→[2,1] 2→[1,1]
+            //   4+días: 7→[2,2,2,1] (resto igual que 3 días)
+            // Para 5h con 3+ días se prefiere [2,2,1] (más distribuido). Si la
+            // pieza de 1h queda colgada al final, la fase `intentarAbsorber1h`
+            // fusiona la 1h con un hermano de 2h → 3h, transformándolo en [3,2].
+            const diasDoc = d.tipo_docente === 2 ? d.maxDias : 5;
+            const TABLA = diasDoc <= 2
+                ? { 7:[4,3],     6:[3,3],   5:[3,2],   4:[2,2], 3:[2,1], 2:[1,1], 1:[1] }
+                : diasDoc === 3
+                ? { 7:[3,2,2],   6:[2,2,2], 5:[2,2,1], 4:[2,2], 3:[2,1], 2:[1,1], 1:[1] }
+                : { 7:[2,2,2,1], 6:[2,2,2], 5:[2,2,1], 4:[2,2], 3:[2,1], 2:[1,1], 1:[1] };
+            if (TABLA[h]) {
+                desglose = [...TABLA[h]];
+            } else {
+                // h > 7 (raro): repartir lo más parejo posible en los días del docente
+                const nSes = Math.max(1, Math.min(diasDoc, Math.ceil(h / 2)));
+                const base = Math.floor(h / nSes), extra = h % nSes;
+                for (let i = 0; i < nSes; i++) desglose.push(base + (i < extra ? 1 : 0));
+            }
+        }
+
+        desglose.forEach(dur => {
+            g.bloques.push({ materia: c, docente: d, grupo: g, duracion: dur, nombreStr: `${c.nombre_materia} (${d.nombre_docente})` });
+        });
+        asignacionesExitosas++;
+    });
+
+    return asignacionesExitosas;
+}
+
+function parsearDisponibilidades(wb) {
+    let docentesEncontrados = 0;
+
+    wb.SheetNames.forEach(sheetName => {
+        let docente = buscarDocentePorHoja(sheetName);
+        if (!docente) return;
+
+        let sheet = wb.Sheets[sheetName];
+        let data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        for (let row = 1; row < Math.min(data.length, 15); row++) {
+            let hora = 6 + row;
+            if (!data[row]) continue;
+            for (let col = 1; col <= 6; col++) {
+                let val = data[row][col];
+                if (val && String(val).trim() !== '') {
+                    let dia = diasSemana[col - 1];
+                    docente.disponibilidad[dia].add(hora);
+                }
+            }
+        }
+        docentesEncontrados++;
+    });
+
+    return docentesEncontrados;
+}
+
+function leerArchivo(file, callback) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+            callback(wb);
+        } catch (error) {
+            const errDiv = document.getElementById("span_error");
+            errDiv.innerText = "✖ Error al leer el archivo: " + error.message;
+            errDiv.style.color = "red";
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function actualizarEstado() {
+    const errDiv = document.getElementById("span_error");
+    if (wbCarga && wbDisp) {
+        errDiv.innerText = "⏳ Procesando archivos...";
+        errDiv.style.color = "#888";
+    } else if (wbCarga) {
+        errDiv.innerText = "✔ Carga Académica cargada. Falta: Disponibilidades.";
+        errDiv.style.color = "#D4A017";
+    } else if (wbDisp) {
+        errDiv.innerText = "✔ Disponibilidades cargadas. Falta: Carga Académica.";
+        errDiv.style.color = "#D4A017";
+    }
+}
+
+// ── Whitelist persistente: días extra autorizados por docente ────────────────
+// El usuario concede a docentes específicos N días extra (0/+1/+2/+3) sobre su
+// escalón institucional. Mapa { docente → diasExtra } en localStorage. Se migra
+// el v1 (Set binario): cada marcado previo equivale a +1.
+const WHITELIST_DENSIDAD_KEY = 'whitelist_dias_extra_v2';
+function obtenerWhitelistDensidad() {
+    try {
+        const raw = localStorage.getItem(WHITELIST_DENSIDAD_KEY);
+        if (raw) return new Map(JSON.parse(raw));
+        const v1 = localStorage.getItem('whitelist_densidad_v1');
+        if (v1) {
+            const m = new Map(JSON.parse(v1).map(d => [d, 1]));
+            guardarWhitelistDensidad(m);
+            return m;
+        }
+        return new Map();
+    } catch { return new Map(); }
+}
+function guardarWhitelistDensidad(map) {
+    try { localStorage.setItem(WHITELIST_DENSIDAD_KEY, JSON.stringify([...map])); } catch {}
+}
+function setExtraDias(nombre, n) {
+    const wl = obtenerWhitelistDensidad();
+    const k = Math.max(0, Math.min(parseInt(n, 10) || 0, 4));
+    if (k > 0) wl.set(nombre, k); else wl.delete(nombre);
+    guardarWhitelistDensidad(wl);
+}
+// Alias retrocompatible (algún código viejo todavía lo invoca).
+function toggleWhitelistDensidad(nombre, marcado) { setExtraDias(nombre, marcado ? 1 : 0); }
+
+// ── Aulas: cargadas desde Excel ─────────────────────────────────────────────
+// Formato del Excel:
+//   Hoja 1 "Aulas":        Nombre | Tipo  (normal / multimedia / multiusos)
+//   Hoja 2 "Asignaciones": Materia | Aula | Obligatorio  (sí/no)
+// { aulas: [{id, nombre, tipo}],
+//   asignaciones: { materia: {aulas:[id], obligatorio:bool} },
+//   pools: { materia: {tipos:[string], obligatorio:bool} },
+//   poolCapacidad: { tipo: N } }
+let datosAulas = { aulas: [], asignaciones: {}, pools: {}, poolCapacidad: {} };
+
+function parsearAulas(wb) {
+    const cfg = { aulas: [], asignaciones: {}, pools: {}, poolCapacidad: {} };
+    const normH = s => String(s).trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const tipos = new Set(['normal', 'multimedia', 'multiusos']);
+
+    // Hoja 1: lista de aulas
+    const h1 = wb.Sheets[wb.SheetNames[0]];
+    if (h1) {
+        const rows = XLSX.utils.sheet_to_json(h1, { defval: '' });
+        rows.forEach((r, i) => {
+            const nombre = String(r[Object.keys(r)[0]] || '').trim();
+            let tipo = String(r[Object.keys(r)[1]] || 'normal').trim().toLowerCase();
+            if (!tipos.has(tipo)) tipo = 'normal';
+            if (nombre) cfg.aulas.push({ id: 'aula-' + i, nombre, tipo });
+        });
+    }
+    // Pool capacities: count of aulas per type
+    tipos.forEach(t => { cfg.poolCapacidad[t] = cfg.aulas.filter(a => a.tipo === t).length; });
+
+    // Hoja 2: asignaciones materia → aula (nombre exacto o tipo como pool)
+    if (wb.SheetNames.length >= 2) {
+        const h2 = wb.Sheets[wb.SheetNames[1]];
+        if (h2) {
+            const rows = XLSX.utils.sheet_to_json(h2, { defval: '' });
+            rows.forEach(r => {
+                const keys = Object.keys(r);
+                const materia = String(r[keys[0]] || '').trim();
+                const aulaNom = String(r[keys[1]] || '').trim();
+                const obligStr = normH(r[keys[2]] || '');
+                const obligatorio = ['SI', 'SÍ', 'OBLIGATORIO', '1', 'TRUE'].includes(obligStr);
+                if (!materia || !aulaNom) return;
+                // Match by exact aula name first
+                const aula = cfg.aulas.find(a => a.nombre === aulaNom);
+                if (aula) {
+                    if (!cfg.asignaciones[materia]) cfg.asignaciones[materia] = { aulas: [], obligatorio: false };
+                    if (!cfg.asignaciones[materia].aulas.includes(aula.id)) cfg.asignaciones[materia].aulas.push(aula.id);
+                    if (obligatorio) cfg.asignaciones[materia].obligatorio = true;
+                    return;
+                }
+                // Match by type name → pool assignment (e.g., "Normal" → any normal aula)
+                const tipoLower = aulaNom.toLowerCase().trim();
+                if (tipos.has(tipoLower)) {
+                    if (!cfg.pools[materia]) cfg.pools[materia] = { tipos: [], obligatorio: false };
+                    if (!cfg.pools[materia].tipos.includes(tipoLower)) cfg.pools[materia].tipos.push(tipoLower);
+                    if (obligatorio) cfg.pools[materia].obligatorio = true;
+                }
+            });
+        }
+    }
+
+    // Hoja 3: aula base por grupo (Grupo | Aula)
+    cfg.grupoAulas = {};
+    if (wb.SheetNames.length >= 3) {
+        const h3 = wb.Sheets[wb.SheetNames[2]];
+        if (h3) {
+            const rows = XLSX.utils.sheet_to_json(h3, { defval: '' });
+            rows.forEach(r => {
+                const keys = Object.keys(r);
+                const grupo = String(r[keys[0]] || '').trim();
+                const aulaNom = String(r[keys[1]] || '').trim();
+                if (!grupo || !aulaNom) return;
+                const aula = cfg.aulas.find(a => a.nombre === aulaNom);
+                if (aula) cfg.grupoAulas[grupo] = aula.id;
+            });
+        }
+    }
+
+    datosAulas = cfg;
+    if (wbCarga && wbDisp) mostrarDesglose();
+}
+
+// ── FASE 1: Determinar maxDias por docente ────────────────────────────────────
+// Contrasta la carga del docente con su disponibilidad real para decidir cuántos
+// días usará el algoritmo en la iteración (Fase 2).
+// Regla: si el peor día disponible dentro del top-N no tiene al menos 1h de
+// holgura sobre la carga media diaria, se suma 1 día más (hasta el tope).
+//   Ejemplo Abner 17h PA, disp=[10,5,5,4]:
+//     maxDias=3 → peorDia=5, cargaMedia=⌈17/3⌉=6 → 5<7 → maxDias=4 ✓
+// Si dispEfectiva está calculada (post-placas-inglés), también se aplica la
+// regla de densidad: díasMín = ⌈carga / dispPromDía × 1.20⌉ — la holgura del
+// 20% compensa la fragmentación por bloques de 2h y conflictos de grupo.
+function calcularDiasDocentes() {
+    MAPA_DOCENTES.forEach(d => {
+        // Partir siempre del valor base calculado por carga académica
+        d.maxDias = d.calcularMaxDias();
+
+        if (d.horas_carga === 0) return;
+        if (d.esDocenteIngles)   return; // inglés usa todos los días disponibles
+
+        const topeDias = d.tipo_docente === 2 ? 4 : 6;
+
+        // Horas disponibles por día, ordenadas de mayor a menor
+        const dispOrd = diasSemana
+            .map(dia => d.disponibilidad[dia].size)
+            .sort((a, b) => b - a);
+
+        const diasConDisp = dispOrd.filter(n => n > 0).length;
+
+        // Mientras haya un día extra disponible y no se alcance el tope:
+        // Si el peor día del top-N no cubre (cargaMedia + 1h de holgura), sumar día
+        while (diasConDisp > d.maxDias && d.maxDias < topeDias) {
+            const peorDia    = dispOrd[d.maxDias - 1];
+            const cargaMedia = Math.ceil(d.horas_carga / d.maxDias);
+            if (peorDia >= cargaMedia + 1) break;
+            d.maxDias++;
+        }
+
+        // Regla de densidad post-inglés: si las placas de inglés robaron mucha
+        // disponibilidad, exigir más días aunque exceda el tope institucional.
+        // Solo se aplica si dispEfectiva ya fue calculada (post-preAsignarInglés)
+        // Y el docente está en la lista blanca (decisión manual del usuario).
+        const whitelistDens = obtenerWhitelistDensidad();
+        if (d.dispEfectiva != null && diasConDisp > 0 && whitelistDens.has(d.nombre_docente)) {
+            const HOLGURA = 1.20; // 20% para bloques de 2h + colisiones de grupo
+            const dispPromDia = d.dispEfectiva / diasConDisp;
+            if (dispPromDia > 0) {
+                const diasMin = Math.ceil(d.horas_carga / dispPromDia * HOLGURA);
+                const nuevo = Math.min(diasMin, diasConDisp);
+                if (nuevo > d.maxDias) {
+                    console.log(`📌 ${d.nombre_docente}: ${d.maxDias}→${nuevo} días por densidad ` +
+                        `(carga ${d.horas_carga}h / dispEf ${d.dispEfectiva}h en ${diasConDisp} días)`);
+                    d.maxDias = nuevo;
+                }
+            }
+        }
+    });
+
+    // Docentes de inglés: sin restricción de días
+    MAPA_DOCENTES.forEach(d => {
+        if (d.esDocenteIngles) d.maxDias = diasSemana.length;
+    });
+}
+
+// Tras colocar las placas de inglés, recalcula la disponibilidad EFECTIVA de cada
+// docente no-inglés: ventanas donde declaró disponibilidad PERO al menos uno de sus
+// grupos ya tiene una placa de inglés ocupándola se descuentan. El resultado alimenta
+// la regla de densidad en calcularDiasDocentes() — un PA con disp aparente de 39h pero
+// con 7h robadas por inglés se trata como dispEfectiva=32h.
+function calcularDispEfectivaPostIngles() {
+    // Mapear docente → grupos que enseña (uno solo recorrido)
+    const gruposDeDoc = new Map();
+    MAPA_DOCENTES.forEach(d => gruposDeDoc.set(d, new Set()));
+    MAPA_GRUPOS.forEach(g => g.bloques.forEach(b => {
+        if (gruposDeDoc.has(b.docente)) gruposDeDoc.get(b.docente).add(g);
+    }));
+
+    MAPA_DOCENTES.forEach(d => {
+        d.dispEfectiva = null;
+        if (d.esDocenteIngles || d.horas_carga === 0) return;
+        const grupos = gruposDeDoc.get(d);
+        if (!grupos || grupos.size === 0) return;
+
+        let total = 0, bloqueados = 0;
+        diasSemana.forEach(dia => {
+            d.disponibilidad[dia].forEach(h => {
+                total++;
+                // Bloqueado si ALGÚN grupo del docente ya tiene inglés en (día, hora):
+                // refleja que la placa de inglés "roba" capacidad real para sus grupos
+                // sincronizados, aunque otro grupo del docente quede libre.
+                let algunoConIngles = false;
+                for (const g of grupos) {
+                    const occ = g.horario[dia][h];
+                    if (occ && esIngles(occ)) { algunoConIngles = true; break; }
+                }
+                if (algunoConIngles) bloqueados++;
+            });
+        });
+        d.dispEfectiva = total - bloqueados;
+        d.dispTotal    = total;
+    });
+}
+
+function parsearTodo() {
+    try {
+        MAPA_DOCENTES.clear(); MAPA_GRUPOS.clear(); PLANTILLAS_MATERIAS = [];
+
+        let asignacionesExitosas = parsearCargaAcademica(wbCarga);
+        let docentesConDisp = parsearDisponibilidades(wbDisp);
+
+        // Barrido de respaldo: marcar como inglés a cualquier docente que tenga
+        // al menos un bloque de inglés (detecta casos que no matchearon por nombre).
+        // Debe correr ANTES de calcularDiasDocentes para que esos docentes sean
+        // excluidos correctamente de la lógica de expansión de días.
+        MAPA_GRUPOS.forEach(g => {
+            g.bloques.forEach(b => {
+                if (esIngles(b)) b.docente.esDocenteIngles = true;
+            });
+        });
+
+        // Fase 1: calcular maxDias de cada docente según carga y disponibilidad
+        calcularDiasDocentes();
+
+        let advertencias = [];
+
+        MAPA_DOCENTES.forEach((d, nombre) => {
+            let dispTotal = 0;
+            diasSemana.forEach(dia => dispTotal += d.disponibilidad[dia].size);
+            if (dispTotal === 0 && d.horas_carga > 0)
+                advertencias.push(`⚠ Docente "${nombre}" tiene ${d.horas_carga}h de carga pero 0h de disponibilidad.`);
+            else if (d.horas_carga > dispTotal && dispTotal > 0)
+                advertencias.push(`⚠ Docente "${nombre}" tiene ${d.horas_carga}h de carga pero solo ${dispTotal}h disponibles.`);
+        });
+
+        MAPA_GRUPOS.forEach((g, nombre) => {
+            let slotsTotal = g.baseHoras.length * diasSemana.length;
+            let horasAsignadas = 0;
+            g.bloques.forEach(b => horasAsignadas += b.duracion);
+            if (horasAsignadas > slotsTotal)
+                advertencias.push(`⚠ Grupo "${nombre}" tiene ${horasAsignadas}h asignadas pero solo ${slotsTotal} slots disponibles.`);
+        });
+
+        const errDiv = document.getElementById("span_error");
+        if (asignacionesExitosas > 0 && advertencias.length === 0) {
+            errDiv.innerText = `✔ ${asignacionesExitosas} asignaciones · ${docentesConDisp} docentes con disponibilidad · ${MAPA_GRUPOS.size} grupos. Listo para generar.`;
+            errDiv.style.color = "green";
+            mostrarDesglose();
+        } else if (asignacionesExitosas > 0 && advertencias.length > 0) {
+            errDiv.innerText = `✔ ${asignacionesExitosas} asignaciones con ${advertencias.length} advertencia(s):\n\n` + [...new Set(advertencias)].join("\n");
+            errDiv.style.color = "#D4A017";
+            mostrarDesglose();
+        } else {
+            errDiv.innerText = "✖ ERROR: No se reconoció ninguna asignación. Verifica que la hoja tenga columnas: Profesor, Asignatura.";
+            errDiv.style.color = "red";
+            document.getElementById("seccion_desglose").style.display = "none";
+        }
+    } catch (error) {
+        const errDiv = document.getElementById("span_error");
+        errDiv.innerText = "✖ Error al procesar: " + error.message;
+        errDiv.style.color = "red";
+    }
+}
+
+function mostrarDesglose() {
+    // Agregar horas por (materia, docente) dentro de cada grupo
+    let porGrupo = [];
+
+    MAPA_GRUPOS.forEach((grupo, nombreGrupo) => {
+        let enGrupo = new Map();
+        grupo.bloques.forEach(b => {
+            let key = b.materia.nombre_materia + '§' + b.docente.nombre_docente;
+            if (!enGrupo.has(key)) enGrupo.set(key, { materia: b.materia.nombre_materia, docente: b.docente, horas: 0 });
+            enGrupo.get(key).horas += b.duracion;
+        });
+        let asigs = [...enGrupo.values()].sort((a, b) => a.materia.localeCompare(b.materia));
+        let totalHrs = asigs.reduce((s, a) => s + a.horas, 0);
+        porGrupo.push({ nombre: nombreGrupo, turno: grupo.turno, asigs, totalHrs });
+    });
+
+    // Ordenar grupos: primero matutino, luego vespertino; dentro de cada turno por nombre
+    porGrupo.sort((a, b) => {
+        if (a.turno !== b.turno) return a.turno === 'matutino' ? -1 : 1;
+        return a.nombre.localeCompare(b.nombre);
+    });
+
+    let totalGrupos  = porGrupo.length;
+    let totalHrsGlobal = porGrupo.reduce((s, g) => s + g.totalHrs, 0);
+
+    let html = `<p style="font-family:var(--font-roboto-mono);font-size:0.85rem;margin:0 0 1rem;color:var(--color-dim-gray)">
+        ${totalGrupos} grupos &nbsp;·&nbsp; ${totalHrsGlobal} horas totales asignadas
+    </p>`;
+
+    // Panel: días extra autorizados por docente PA (persistente). Cada selector da
+    // 0/+1/+2/+3 sobre el escalón institucional. La etiqueta "sugerido +N" aparece
+    // cuando la carga no cabría con menos (carga > (escalón + N - 1) · 4 h/día).
+    const wl = obtenerWhitelistDensidad();
+    const pas = [];
+    MAPA_DOCENTES.forEach(d => {
+        if (d.tipo_docente === 2 && d.horas_carga > 0) pas.push(d);
+    });
+    pas.sort((a, b) => a.nombre_docente.localeCompare(b.nombre_docente));
+    if (pas.length > 0) {
+        const escalonPuro = (h) => h <= 9 ? 2 : h <= 20 ? 3 : 4;
+        const nMarcados = [...wl.values()].filter(v => v > 0).length;
+        const totalExtra = [...wl.values()].reduce((s, v) => s + v, 0);
+        html += `<details style="margin:0 0 1rem;border:2px solid var(--color-black,#221F20);background:#FFF8E0;padding:0.6rem 0.8rem;box-shadow:4px 4px 0 var(--color-black,#221F20);border-radius:4px">
+            <summary style="cursor:pointer;font-weight:bold;font-size:0.85rem">
+                ⚙️ Días extra autorizados por docente
+                <span style="color:var(--color-dim-gray);font-weight:normal;font-size:0.78rem">
+                    (${nMarcados} docentes · ${totalExtra} días extra concedidos sobre el escalón)
+                </span>
+            </summary>
+            <div style="margin-top:0.5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:0.3rem 0.8rem;font-size:0.82rem">`;
+        pas.forEach(d => {
+            const carga = d.horas_carga;
+            const esc = escalonPuro(carga);
+            const sugerido = Math.max(0, Math.ceil(carga / 4) - esc);   // días extra mínimos para que la carga quepa
+            const actual = wl.get(d.nombre_docente) || 0;
+            let opts = '';
+            for (let k = 0; k <= 3; k++) opts += `<option value="${k}"${k === actual ? ' selected' : ''}>+${k}</option>`;
+            const sug = sugerido > 0
+                ? ` <small style="color:#c62828;font-weight:bold">sugerido +${sugerido}</small>`
+                : '';
+            html += `<label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer">
+                <select class="sel-densidad" data-doc="${d.nombre_docente.replace(/"/g, '&quot;')}" style="padding:2px 6px;border:1.5px solid var(--color-black,#221F20);background:#fff;font-family:inherit;font-size:0.82rem">${opts}</select>
+                <span>${d.nombre_docente} <small style="color:var(--color-dim-gray)">(${carga}h · escalón ${esc})</small>${sug}</span>
+            </label>`;
+        });
+        html += `</div></details>`;
+    }
+
+    // ── Panel: Aulas (solo lectura, cargadas desde Excel) ─────────────────────
+    const aulaCfg = datosAulas;
+    if (aulaCfg.aulas.length > 0) {
+        const tipoColores = { normal: 'background:#221F20;color:#FCB814', multimedia: 'background:#FCB814;color:#221F20;border:1px solid #221F20', multiusos: 'background:#81C99C;color:#221F20;border:1px solid #221F20' };
+        const nAsigEsp = Object.keys(aulaCfg.asignaciones).filter(k => aulaCfg.asignaciones[k].aulas.length > 0).length;
+        const nPool = Object.keys(aulaCfg.pools || {}).length;
+        const nTotal = nAsigEsp + nPool;
+        html += `<details style="margin:0 0 1rem;border:2px solid var(--color-black,#221F20);background:#FFF8E0;padding:0.6rem 0.8rem;box-shadow:4px 4px 0 var(--color-black,#221F20)">
+            <summary style="cursor:pointer;font-weight:bold;font-size:0.85rem">
+                🏢 Aulas cargadas
+                <span style="color:var(--color-dim-gray);font-weight:normal;font-size:0.78rem">(${aulaCfg.aulas.length} aulas · ${nTotal} materias asignadas)</span>
+            </summary>
+            <div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.3rem">`;
+        // Specific aulas
+        aulaCfg.aulas.forEach(a => {
+            const mats = Object.entries(aulaCfg.asignaciones).filter(([, v]) => v.aulas.includes(a.id)).map(([m, v]) => `${m}${v.obligatorio ? ' ⬤' : ''}`);
+            html += `<div style="display:flex;align-items:center;gap:0.5rem;background:#fff;border:1.5px solid var(--color-black);padding:0.3rem 0.5rem">
+                <span style="font-size:0.8rem;font-weight:bold;flex:0 0 auto">${a.nombre}</span>
+                <span style="font-size:0.65rem;padding:1px 6px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;${tipoColores[a.tipo] || tipoColores.normal}">${a.tipo}</span>
+                <span style="font-size:0.7rem;color:var(--color-dim-gray);flex:1;text-align:right">${mats.length ? mats.join(', ') : '<em>sin materias</em>'}</span>
+            </div>`;
+        });
+        // Pool assignments (type-based)
+        if (aulaCfg.pools && Object.keys(aulaCfg.pools).length > 0) {
+            const poolsByTipo = {};
+            Object.entries(aulaCfg.pools).forEach(([mat, p]) => {
+                p.tipos.forEach(t => { (poolsByTipo[t] = poolsByTipo[t] || []).push(`${mat}${p.obligatorio ? ' ⬤' : ''}`); });
+            });
+            for (const tipo in poolsByTipo) {
+                const cap = (aulaCfg.poolCapacidad || {})[tipo] || 0;
+                html += `<div style="display:flex;align-items:center;gap:0.5rem;background:#e8f0fe;border:1.5px solid var(--color-black);padding:0.3rem 0.5rem">
+                    <span style="font-size:0.8rem;font-weight:bold;flex:0 0 auto">Pool ${tipo}</span>
+                    <span style="font-size:0.65rem;padding:1px 6px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;${tipoColores[tipo] || tipoColores.normal}">×${cap} aulas</span>
+                    <span style="font-size:0.7rem;color:var(--color-dim-gray);flex:1;text-align:right">${poolsByTipo[tipo].join(', ')}</span>
+                </div>`;
+            }
+        }
+        // Group base aulas
+        if (aulaCfg.grupoAulas && Object.keys(aulaCfg.grupoAulas).length > 0) {
+            html += `<div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px dashed var(--color-dim-gray)">
+                <span style="font-size:0.7rem;font-weight:bold">Aula base por grupo:</span>
+                <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.3rem">`;
+            const aulaById = {};
+            aulaCfg.aulas.forEach(a => { aulaById[a.id] = a; });
+            Object.entries(aulaCfg.grupoAulas).sort((a, b) => a[0].localeCompare(b[0])).forEach(([g, aid]) => {
+                const a = aulaById[aid];
+                if (!a) return;
+                html += `<span style="font-size:0.7rem;background:#fff;border:1px solid var(--color-black);padding:1px 6px"><strong>${g}</strong> → ${a.nombre}</span>`;
+            });
+            html += `</div></div>`;
+        }
+        html += `<p style="margin:0.4rem 0 0;font-size:0.65rem;color:var(--color-dim-gray)">⬤ = obligatorio · sin marca = preferencia · editar en el Excel de aulas</p>
+            </div>
+        </details>`;
+    }
+
+    html += `<table class="desglose-tabla">
+        <thead>
+            <tr>
+                <th style="width:8%">Grupo</th>
+                <th style="width:10%">Turno</th>
+                <th style="width:34%">Materia</th>
+                <th style="width:26%">Docente</th>
+                <th style="width:14%">Tipo</th>
+                <th style="width:8%">Horas</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    porGrupo.forEach(({ nombre, turno, asigs, totalHrs }) => {
+        let turnoLabel = turno.charAt(0).toUpperCase() + turno.slice(1);
+
+        html += `<tr class="doc-header">
+            <td>${nombre}</td>
+            <td><span class="badge-turno">${turnoLabel}</span></td>
+            <td style="color:var(--color-dim-gray);font-size:var(--fs-sm);font-weight:normal">
+                ${asigs.length} materia${asigs.length !== 1 ? 's' : ''}
+            </td>
+            <td></td>
+            <td></td>
+            <td class="col-hrs">${totalHrs} hrs</td>
+        </tr>`;
+
+        asigs.forEach(({ materia, docente, horas }) => {
+            let cat   = docente.tipo_docente === 2 ? 'PA' : (docente.categoria || 'PTC');
+            let badge = docente.tipo_docente === 2 ? 'badge-pa' : 'badge-ptc';
+            const hex = colorParaMateria(materia + ' [' + nombre + ']');
+            html += `<tr class="asig-row">
+                <td></td>
+                <td></td>
+                <td><span class="swatch" style="background:#${hex}"></span>${materia}</td>
+                <td>${docente.nombre_docente}</td>
+                <td><span class="badge-cat ${badge}">${cat}</span></td>
+                <td class="col-hrs">${horas}h</td>
+            </tr>`;
+        });
+    });
+
+    html += '</tbody></table>';
+
+    document.getElementById("desglose_contenido").innerHTML = html;
+    document.getElementById("seccion_desglose").style.display = "block";
+    // Persistir cambios de los días extra por docente (selector +0/+1/+2/+3)
+    document.querySelectorAll('#desglose_contenido .sel-densidad').forEach(sel => {
+        sel.addEventListener('change', e => {
+            setExtraDias(e.target.dataset.doc, e.target.value);
+        });
+    });
+}
+
+document.getElementById("input_carga").onchange = e => {
+    leerArchivo(e.target.files[0], wb => {
+        wbCarga = wb;
+        actualizarEstado();
+        if (wbCarga && wbDisp) parsearTodo();
+    });
+};
+
+document.getElementById("input_disp").onchange = e => {
+    leerArchivo(e.target.files[0], wb => {
+        wbDisp = wb;
+        actualizarEstado();
+        if (wbCarga && wbDisp) parsearTodo();
+    });
+};
+
+document.getElementById("input_aulas").onchange = e => {
+    leerArchivo(e.target.files[0], wb => { parsearAulas(wb); });
+};
+
+function aplicarAsignacion(grupo, bloque, dia, horaInicio, esForzado = false) {
+    // Guardia: si el bloque ya está en cualquier slot del grupo, no duplicar.
+    // Cubre el caso donde un swap o SA olvidó hacer quitarAsignacion primero.
+    for (const dd of diasSemana)
+        for (const h of grupo.baseHoras)
+            if (grupo.horario[dd][h] === bloque) return;
+
+    // No sobrescribir el inglés simultáneo fijo: lo protege de ser pisado por una reparación.
+    for (let h = horaInicio; h < horaInicio + bloque.duracion; h++) {
+        const occ = grupo.horario[dia][h];
+        if (occ && occ !== bloque && esInglesFijo(occ, grupo)) return; // inglés inamovible: rechaza
+    }
+
+    // ── Guardia DURA de validez (vale para TODAS las fases) ──────────────────────
+    // No pisar otra clase del grupo y, sobre todo, no poner al docente en dos sitios a
+    // la vez: si el slot del grupo ya lo ocupa OTRO bloque, o el docente ya tiene clase
+    // en (dia,h) en cualquier grupo, se ABORTA sin colocar. Es la causa de los solapes
+    // que el recocido/CSP dejaban y que sanitizarSeguro tenía que borrar después (con
+    // pérdida de horas). Quien quiera REEMPLAZAR debe hacer quitarAsignacion primero.
+    for (let h = horaInicio; h < horaInicio + bloque.duracion; h++) {
+        const occG = grupo.horario[dia][h];
+        if (occG && occG !== bloque) return;          // slot del grupo ya ocupado por otro bloque
+        if (bloque.docente.asignado[dia][h]) return;  // docente ya da clase a esa hora → sería solape
+    }
+
+    for (let h = horaInicio; h < horaInicio + bloque.duracion; h++) {
+        grupo.horario[dia][h] = bloque;
+        let marca = esForzado ? " [⚠️ FORZADO]" : "";
+        bloque.nombreStrRender = `${bloque.materia.nombre_materia} (${bloque.docente.nombre_docente})${marca}`;
+        bloque.docente.asignado[dia][h] = `${bloque.materia.nombre_materia} [${grupo.nombre_grupo}]${marca}`;
+    }
+    bloque.docente.diasActivos.add(dia);
+    grupo.sesionesDia[dia][bloque.materia.nombre_materia] = (grupo.sesionesDia[dia][bloque.materia.nombre_materia] || 0) + 1;
+}
+
+/** ¿Es inglés simultáneo FIJO (cuatri 1-7)? Las reparaciones no deben moverlo: si lo mueven,
+ *  queda desincronizado. Tratan su slot como ocupado-inamovible (buscan otra opción, sin bucle). */
+function esInglesFijo(bloque, grupo) {
+    if (!bloque || !bloque.preAsignado || !esIngles(bloque)) return false;
+    const m = String((grupo || bloque.grupo).nombre_grupo).match(/^(\d+)/);
+    const c = m ? parseInt(m[1]) : 0;
+    return c >= 1 && c <= 7;
+}
+
+function aplicarEstilosForzados(ws) {
+    if (!ws['!ref']) return;
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    // Solo marca en rojo las celdas FORZADAS; las demás ya tienen su color de materia.
+    const estiloForzado = {
+        fill: { patternType: "solid", fgColor: { rgb: "FFCCCC" } },
+        font: { color: { rgb: "CC0000" }, bold: true }
+    };
+    for (let R = range.s.r; R <= range.e.r; R++) {
+        for (let C = range.s.c; C <= range.e.c; C++) {
+            const addr = XLSX.utils.encode_cell({ r: R, c: C });
+            const cell = ws[addr];
+            if (!cell) continue;
+            if (typeof cell.v === 'string' && cell.v.includes('FORZADO')) {
+                cell.s = estiloForzado;
+            }
+        }
+    }
+}
+
+function resolverAula(grupoNombre, materiaNombre) {
+    if (!datosAulas || !datosAulas.aulas || datosAulas.aulas.length === 0) return '';
+    const n = s => String(s).toUpperCase().normalize('NFD').replace(/[^A-Z0-9 ]/g, '').trim();
+    const aulaNombre = id => { const a = datosAulas.aulas.find(x => x.id === id); return a ? a.nombre : ''; };
+    let asig = datosAulas.asignaciones && datosAulas.asignaciones[materiaNombre];
+    if (!asig) { for (const k in (datosAulas.asignaciones || {})) if (n(k) === n(materiaNombre)) { asig = datosAulas.asignaciones[k]; break; } }
+    if (asig && asig.aulas.length > 0) return asig.aulas.map(aulaNombre).filter(Boolean).join(' / ');
+    // 2) Pool → single-aula types (multimedia, multiusos) override group base
+    let pool = datosAulas.pools && datosAulas.pools[materiaNombre];
+    if (!pool) { for (const k in (datosAulas.pools || {})) if (n(k) === n(materiaNombre)) { pool = datosAulas.pools[k]; break; } }
+    if (pool) {
+        const nombres = pool.tipos.map(t => {
+            const del = datosAulas.aulas.filter(a => a.tipo === t);
+            return del.length === 1 ? del[0].nombre : null;
+        }).filter(Boolean);
+        if (nombres.length > 0) return nombres.join(' / ');
+    }
+    // 3) Group base aula (default)
+    const grBase = datosAulas.grupoAulas || {};
+    let base = grBase[grupoNombre];
+    if (!base) { for (const k in grBase) if (n(k) === n(grupoNombre)) { base = grBase[k]; break; } }
+    if (base) return aulaNombre(base);
+    return '';
+}
+
+function exportarExcel() {
+    const wb = XLSX.utils.book_new();
+    MAPA_GRUPOS.forEach(g => {
+        const rows = [["HORA", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]];
+        // colorCeldas: "rowIdx,colIdx" → hex (sin #) para relleno de celda
+        const colorCeldas = new Map();
+
+        g.baseHoras.forEach((h, hIdx) => {
+            const r = [h];
+            diasSemana.forEach((d, dIdx) => {
+                const bloque = g.horario[d][h];
+                if (bloque) {
+                    const txt = bloque.nombreStrRender || bloque.nombreStr;
+                    const aula = resolverAula(g.nombre_grupo, bloque.materia.nombre_materia);
+                    r.push(aula ? txt + ' | ' + aula : txt);
+                } else {
+                    r.push("");
+                }
+                if (bloque) {
+                    // Clave materia+grupo para que el color sea único por (materia, grupo)
+                    // y sea consistente con la hoja del docente.
+                    const colorKey = bloque.materia.nombre_materia + ' [' + bloque.grupo.nombre_grupo + ']';
+                    colorCeldas.set(`${hIdx + 1},${dIdx + 1}`, colorParaMateria(colorKey));
+                }
+            });
+            rows.push(r);
+        });
+
+        let totalSemana = 0;
+        diasSemana.forEach(d => { g.baseHoras.forEach(h => { if(g.horario[d][h] !== null) totalSemana++; }); });
+        rows.push([]); rows.push(["TOTAL HORAS EN LA SEMANA:", `${totalSemana} hrs`]);
+
+        // ── Desglose materia · docente · horas ──────────────────────────
+        const enGrupo = new Map();
+        g.bloques.forEach(b => {
+            const key = b.materia.nombre_materia + '§' + b.docente.nombre_docente;
+            if (!enGrupo.has(key)) enGrupo.set(key, { materia: b.materia.nombre_materia, docente: b.docente.nombre_docente, horas: 0 });
+            enGrupo.get(key).horas += b.duracion;
+        });
+        const asigs = [...enGrupo.values()].sort((a, b) => a.materia.localeCompare(b.materia));
+        rows.push([]);
+        rows.push(["MATERIA", "DOCENTE", "HORAS", "AULA"]);
+        asigs.forEach(({ materia, docente, horas }) => {
+            const aula = resolverAula(g.nombre_grupo, materia);
+            rows.push([materia, docente, `${horas}h`, aula || '']);
+        });
+        // ────────────────────────────────────────────────────────────────
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+
+        // ── Aplicar colores por materia — grid del horario ───────────────
+        colorCeldas.forEach((hex, key) => {
+            const [r, c] = key.split(',').map(Number);
+            const addr = XLSX.utils.encode_cell({ r, c });
+            if (ws[addr]) ws[addr].s = { fill: { patternType: "solid", fgColor: { rgb: hex } } };
+        });
+
+        // ── Colorear columna MATERIA en el desglose del final de hoja ────
+        // Distribución de filas (0-indexed):
+        //   0            → encabezado HORA/LUNES/…
+        //   1…N          → grid (N = baseHoras.length)
+        //   N+1          → fila vacía
+        //   N+2          → TOTAL HORAS EN LA SEMANA
+        //   N+3          → fila vacía
+        //   N+4          → encabezado MATERIA/DOCENTE/HORAS
+        //   N+5…         → una fila por materia
+        const desgloseStart = g.baseHoras.length + 5;
+        asigs.forEach(({ materia }, i) => {
+            const addr = XLSX.utils.encode_cell({ r: desgloseStart + i, c: 0 });
+            const colorKey = materia + ' [' + g.nombre_grupo + ']';
+            if (ws[addr]) ws[addr].s = { fill: { patternType: "solid", fgColor: { rgb: colorParaMateria(colorKey) } } };
+        });
+        // ────────────────────────────────────────────────────────────────
+
+        // Anchos de columna para lectura cómoda
+        ws['!cols'] = [
+            { wch: 6 },
+            { wch: 45 }, { wch: 45 }, { wch: 45 },
+            { wch: 45 }, { wch: 45 }, { wch: 45 }
+        ];
+
+        aplicarEstilosForzados(ws);
+        XLSX.utils.book_append_sheet(wb, ws, "G_" + g.nombre_grupo.substring(0, 25));
+    });
+    MAPA_DOCENTES.forEach(d => {
+        const rows = [["HORA", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]];
+        const colorCeldas = new Map();
+
+        for (let h = 7; h <= 21; h++) {
+            const r = [h];
+            const hIdx = h - 7; // offset de fila (0 = encabezado)
+            diasSemana.forEach((dia, dIdx) => {
+                const txt = d.asignado[dia][h];
+                r.push(txt ? txt : "");
+                if (txt) {
+                    // txt tiene formato "MATERIA [GRUPO]" — usar la cadena completa
+                    // como clave para diferenciar el mismo curso en distintos grupos.
+                    const materiaBase = txt.split(' [⚠')[0]; // quitar sufijo FORZADO si existe
+                    colorCeldas.set(`${hIdx + 1},${dIdx + 1}`, colorParaMateria(materiaBase));
+                }
+            });
+            rows.push(r);
+        }
+
+        let totalSemana = 0;
+        diasSemana.forEach(dia => { totalSemana += Object.keys(d.asignado[dia]).length; });
+
+        let estatusTipo = ` (${d.categoria || (d.tipo_docente === 2 ? 'PA' : (d.categoria || 'PTC'))})`;
+        rows.push([]);
+        rows.push(["TOTAL HORAS EN LA SEMANA:", `${totalSemana} hrs`, "", "DÍAS ASISTIDOS:", `${d.diasActivos.size} de ${d.maxDias}${estatusTipo}`]);
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+
+        // ── Aplicar colores por materia — grid del docente ───────────────
+        colorCeldas.forEach((hex, key) => {
+            const [r, c] = key.split(',').map(Number);
+            const addr = XLSX.utils.encode_cell({ r, c });
+            if (ws[addr]) ws[addr].s = { fill: { patternType: "solid", fgColor: { rgb: hex } } };
+        });
+        // ────────────────────────────────────────────────────────────────
+
+        // Anchos de columna para lectura cómoda
+        ws['!cols'] = [
+            { wch: 6 },
+            { wch: 30 }, { wch: 30 }, { wch: 30 },
+            { wch: 30 }, { wch: 30 }, { wch: 30 }
+        ];
+
+        aplicarEstilosForzados(ws);
+        XLSX.utils.book_append_sheet(wb, ws, "D_" + d.nombre_docente.substring(0, 25));
+    });
+
+    // ── Hojas por Aula ─────────────────────────────────────────────────────
+    if (datosAulas && datosAulas.aulas && datosAulas.aulas.length > 0) {
+        const aulaHorario = {};
+        datosAulas.aulas.forEach(a => { aulaHorario[a.nombre] = {}; });
+        MAPA_GRUPOS.forEach(g => {
+            g.baseHoras.forEach(h => {
+                diasSemana.forEach(d => {
+                    const bloque = g.horario[d][h];
+                    if (!bloque) return;
+                    const aulaTxt = resolverAula(g.nombre_grupo, bloque.materia.nombre_materia);
+                    if (!aulaTxt) return;
+                    aulaTxt.split(' / ').forEach(aN => {
+                        if (aulaHorario[aN]) {
+                            const key = d + '|' + h;
+                            if (!aulaHorario[aN][key]) aulaHorario[aN][key] = [];
+                            aulaHorario[aN][key].push({
+                                texto: `${bloque.materia.nombre_materia} [${g.nombre_grupo}]`,
+                                colorKey: bloque.materia.nombre_materia + ' [' + g.nombre_grupo + ']'
+                            });
+                        }
+                    });
+                });
+            });
+        });
+        datosAulas.aulas.forEach(a => {
+            const schedule = aulaHorario[a.nombre];
+            const rows = [["HORA", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]];
+            const colorCeldas = new Map();
+            for (let h = 7; h <= 20; h++) {
+                const r = [h];
+                const hIdx = h - 7;
+                diasSemana.forEach((d, dIdx) => {
+                    const entries = schedule[d + '|' + h];
+                    if (entries && entries.length > 0) {
+                        r.push(entries.map(e => e.texto).join('\n'));
+                        colorCeldas.set(`${hIdx + 1},${dIdx + 1}`, colorParaMateria(entries[0].colorKey));
+                    } else {
+                        r.push("");
+                    }
+                });
+                rows.push(r);
+            }
+            let totalSemana = 0;
+            diasSemana.forEach(d => { for (let h = 7; h <= 20; h++) if (schedule[d + '|' + h]) totalSemana++; });
+            rows.push([]);
+            rows.push(["TOTAL HORAS EN LA SEMANA:", `${totalSemana} hrs`, "", "TIPO:", a.tipo]);
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            colorCeldas.forEach((hex, key) => {
+                const [r, c] = key.split(',').map(Number);
+                const addr = XLSX.utils.encode_cell({ r, c });
+                if (ws[addr]) ws[addr].s = { fill: { patternType: "solid", fgColor: { rgb: hex } } };
+            });
+            ws['!cols'] = [
+                { wch: 6 },
+                { wch: 35 }, { wch: 35 }, { wch: 35 },
+                { wch: 35 }, { wch: 35 }, { wch: 35 }
+            ];
+            XLSX.utils.book_append_sheet(wb, ws, "A_" + a.nombre.substring(0, 25));
+        });
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
+    const rowsCambios = [["GRUPO", "MATERIA", "DOCENTE ASIGNADO ORIGINALMENTE", "DOCENTE FINAL (OPTIMIZADO)"]];
+    if (LOG_CAMBIOS.length === 0) rowsCambios.push(["No hubo intercambios finales de docentes", "-", "-", "-"]);
+    else LOG_CAMBIOS.forEach(c => rowsCambios.push([c.Grupo, c.Materia, c.DocenteAnterior, c.DocenteNuevo]));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rowsCambios), "Cambios_Docentes");
+
+    XLSX.writeFile(wb, "Horarios Generados.xlsx", { cellStyles: true });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MOTOR CSP (beta) — integración no destructiva del engine de restricciones (JS puro)
+// Convierte las estructuras ya parseadas (MAPA_*) al formato del engine, corre los
+// pre-checks de capacidad (escalan a datos reales) y, acotado por tamaño, el solver CP.
+// Funciones auxiliares usadas por el motor ÓPTIMO (CP-SAT).
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Adapta MAPA_DOCENTES / MAPA_GRUPOS al formato { grupos, docentes, cargas } del engine. */
+function construirDatosCSP() {
+    const grupos = {}, docentes = {}, cargasMap = new Map();
+    MAPA_GRUPOS.forEach((g, gn) => {
+        grupos[gn] = { turno: g.turno };
+        g.bloques.forEach(b => {
+            const dn = b.docente.nombre_docente;
+            if (!docentes[dn]) {
+                const disp = {};
+                diasSemana.forEach((dia, i) => {
+                    const hrs = [...b.docente.disponibilidad[dia]];
+                    if (hrs.length) disp[i] = hrs;
+                });
+                // tipo del docente: 2 = PA (días por escalón); 1/otros = según disponibilidad.
+                docentes[dn] = { disponibilidad: disp, tipo: b.docente.tipo_docente };
+            }
+            // La carga total de un (grupo,materia,docente) = suma de las duraciones de sus bloques.
+            const key = gn + '|' + b.materia.nombre_materia + '|' + dn;
+            const cur = cargasMap.get(key);
+            if (cur) {
+                cur.horas += b.duracion;
+            } else {
+                // Inglés simultáneo: mismo cuatrimestre (grado) → misma hora en todos los grupos,
+                // salvo 8° y 9° que NO se sincronizan. La clave `sync` agrupa por cuatrimestre.
+                const grado = b.materia.grado_materia;
+                const esIngles = normalizarNombre(b.materia.nombre_materia).includes('ingles');
+                const nc = { grupo: gn, materia: b.materia.nombre_materia, docente: dn, turno: g.turno, horas: b.duracion };
+                if (esIngles && grado !== 8 && grado !== 9) nc.sync = 'INGLES|' + grado;
+                cargasMap.set(key, nc);
+            }
+        });
+    });
+    const cargas = [...cargasMap.values()];
+    // Escalón institucional ESTRICTO (CP-SAT lo aplica como regla dura): PA con carga ≤9→2 días,
+    // ≤20→3, 21+→4. El usuario puede conceder +1 día a docentes específicos marcándolos en la
+    // whitelist del desglose (persistente en localStorage); sin whitelist, ningún PA excede.
+    const cargaDoc = {};
+    cargas.forEach(c => { cargaDoc[c.docente] = (cargaDoc[c.docente] || 0) + c.horas; });
+    const wl = obtenerWhitelistDensidad();
+    const escalonPuro = (h) => h <= 9 ? 2 : h <= 20 ? 3 : 4;
+    Object.keys(docentes).forEach(dn => {
+        const info = docentes[dn];
+        info.maxDias = null;
+        if (info.tipo === 2) {
+            const base = escalonPuro(cargaDoc[dn] || 0);
+            info.maxDias = Math.min(base + (wl.get(dn) || 0), 6);
+        }
+    });
+    return { ventanas: { matutino: [7, 17], vespertino: [12, 21] }, grupos, docentes, cargas, aulas: datosAulas };
+}
+
+const ESTILO_CSP = `<style>
+.csp-feedback{margin:1rem 0;font-family:var(--font-roboto-mono,monospace)}
+.csp-box{border:3px solid var(--color-black,#221F20);box-shadow:4px 4px 0 var(--color-black,#221F20);background:#fff;padding:0.6rem 0.8rem;margin:0.5rem 0;border-radius:4px;font-size:0.85rem}
+.csp-ok{background:var(--color-yellow,#FFD60A)}.csp-err{background:#ffd9d4}.csp-warn{background:#fff3c4}
+.csp-box ul{margin:0.4rem 0 0;padding-left:1.1rem}.csp-box code{background:#221F20;color:#fff;padding:0 0.3rem;border-radius:3px}
+table.csp-grid{border-collapse:collapse;margin:0.6rem 0;font-size:0.7rem;background:#fff}
+table.csp-grid caption{text-align:left;font-weight:bold;margin-bottom:0.3rem}
+table.csp-grid th,table.csp-grid td{border:2px solid var(--color-black,#221F20);padding:0.2rem 0.35rem;min-width:2.2rem;text-align:center}
+table.csp-grid td.ocupado{background:var(--color-yellow,#FFD60A);font-weight:bold}
+.csp-run{display:flex;align-items:center;gap:0.7rem}
+.csp-spin{flex:0 0 auto;width:1.4rem;height:1.4rem;border:3px solid var(--color-black,#221F20);border-top-color:transparent;border-radius:50%;animation:csp-rot 0.8s linear infinite}
+@keyframes csp-rot{to{transform:rotate(360deg)}}
+.csp-run b{font-variant-numeric:tabular-nums}
+.csp-bar{height:6px;background:var(--color-black,#221F20);border-radius:3px;margin-top:0.5rem;overflow:hidden;position:relative}
+.csp-bar::after{content:"";position:absolute;inset:0;width:40%;background:var(--color-yellow,#FFD60A);animation:csp-slide 1.2s ease-in-out infinite}
+@keyframes csp-slide{0%{left:-40%}100%{left:100%}}
+@media (prefers-reduced-motion:reduce){.csp-spin,.csp-bar::after{animation:none}}
+</style>`;
+
+/** Vuelca el horario óptimo (slots de 1 h del solver) al estado normal del app:
+ *  reconstruye bloques contiguos por día y los coloca con aplicarAsignacion, de modo
+ *  que el desglose, la tabla de horarios y el Excel se generan con el pipeline existente
+ *  (sin rejilla ni botón propios). Devuelve { colocadas } para verificación. */
+function aplicarHorarioOptimo(slots) {
+    // Estado limpio (mismo reset que una corrida nueva).
+    MAPA_GRUPOS.forEach(g => g.reset());
+    MAPA_DOCENTES.forEach(d => d.reset());
+
+    // Localiza las instancias REALES de materia/docente en los bloques del grupo,
+    // para que el render/export (que leen objetos, no strings) funcionen igual.
+    const refDe = (gObj, mat, doc) => gObj.bloques.find(b =>
+        b.materia.nombre_materia === mat && b.docente.nombre_docente === doc);
+
+    // Agrupa los slots de 1 h por carga (grupo|materia|docente) y por día.
+    const porCarga = new Map();
+    slots.forEach(s => {
+        const key = s.grupo + '|' + s.materia + '|' + s.docente;
+        let c = porCarga.get(key);
+        if (!c) { c = { grupo: s.grupo, materia: s.materia, docente: s.docente, dias: new Map() }; porCarga.set(key, c); }
+        if (!c.dias.has(s.dia)) c.dias.set(s.dia, []);
+        c.dias.get(s.dia).push(s.hora);
+    });
+
+    // Por cada carga y día, detecta tramos contiguos (runs) y los coloca como un bloque.
+    porCarga.forEach(c => {
+        const gObj = MAPA_GRUPOS.get(c.grupo);
+        const ref  = gObj && refDe(gObj, c.materia, c.docente);
+        if (!gObj || !ref) return;
+        c.dias.forEach((horas, diaIdx) => {
+            const dia = diasSemana[diaIdx];
+            horas.sort((a, b) => a - b);
+            for (let i = 0; i < horas.length;) {
+                let j = i;
+                while (j + 1 < horas.length && horas[j + 1] === horas[j] + 1) j++;
+                aplicarAsignacion(gObj, { materia: ref.materia, docente: ref.docente, duracion: j - i + 1, grupo: gObj }, dia, horas[i]);
+                i = j + 1;
+            }
+        });
+    });
+
+    let colocadas = 0;
+    MAPA_GRUPOS.forEach(g => diasSemana.forEach(d => g.baseHoras.forEach(h => { if (g.horario[d][h]) colocadas++; })));
+    return { colocadas };
+}
+
+async function ejecutarMotorOptimo() {
+    const out = document.getElementById('span_error');
+    let cant = 0; MAPA_GRUPOS.forEach(g => cant += g.bloques.length);
+    if (cant === 0) { alert('Carga una plantilla válida primero.'); return; }
+    const btnOpt = document.getElementById('button_optimo');
+    const t0 = Date.now();
+    let timer = null;
+    const detener = () => { if (timer) { clearInterval(timer); timer = null; } if (btnOpt) { btnOpt.disabled = false; btnOpt.style.opacity = ''; btnOpt.textContent = 'Generar ÓPTIMO ✦'; } };
+    if (btnOpt) { btnOpt.disabled = true; btnOpt.style.opacity = '0.5'; btnOpt.textContent = 'Resolviendo…'; }
+    let progressMsg = 'Iniciando CP-SAT…';
+    const pinta = () => {
+        const s = Math.round((Date.now() - t0) / 1000);
+        out.innerHTML = ESTILO_CSP + `<div class="csp-box"><div class="csp-run"><span class="csp-spin"></span><span>✦ ${progressMsg} <b>${s}s</b><br><small>Tarda ~5&nbsp;min (busca el patrón didáctico perfecto). No cierres la app.</small></span></div><div class="csp-bar"></div></div>`;
+    };
+    pinta();
+    timer = setInterval(pinta, 1000);
+    if (window.electronAPI) {
+        window.electronAPI.onProgress((p) => {
+            if (p.msg) progressMsg = p.msg;
+        });
+    }
+    try {
+        const datos = construirDatosCSP();
+        const r = window.electronAPI
+            ? await window.electronAPI.solve(datos)
+            : await fetch('/api/optimo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) }).then(r => r.json());
+        detener();
+        if (!r.ok) { out.innerHTML = ESTILO_CSP + `<div class="csp-box csp-err">Error de CP-SAT: ${String(r.error || 'desconocido').replace(/</g, '&lt;')}</div>`; return; }
+        const completo = r.colocadas === r.total;
+        try {
+            aplicarHorarioOptimo(r.horario);
+            mostrarDesglose();
+            exportarExcel();
+        } catch (err) {
+            out.innerHTML = ESTILO_CSP + `<div class="csp-box csp-err">CP-SAT resolvió, pero falló al volcarlo: ${err && err.message}</div>`;
+            return;
+        }
+        const seg = r.segundos != null ? r.segundos : ((Date.now() - t0) / 1000).toFixed(1);
+        out.innerHTML = ESTILO_CSP + `<div class="csp-box ${completo ? 'csp-ok' : 'csp-warn'}">${completo ? '✅ 100% — patrón didáctico' : '◑ máximo posible'}: <b>${r.colocadas}/${r.total}h</b> · ${seg}s · CP-SAT${r.optimo ? ' (óptimo demostrado)' : ''}. Huecos: ${r.huecos || 0}. El horario y el Excel aparecen abajo.</div>`;
+    } catch (e) {
+        detener();
+        out.innerHTML = ESTILO_CSP + `<div class="csp-box csp-err">Error del solver: ${e.message}</div>`;
+    }
+}
+
+// ── Inicialización ──────────────────────────────────────────────────────────
+console.log('%c From Schedule FI Desktop · CP-SAT ',
+    'background:#FFD60A;color:#221F20;font-weight:bold;padding:2px 6px');
+
+const _btnOptimo = document.getElementById("button_optimo");
+if (_btnOptimo) {
+    _btnOptimo.onclick = ejecutarMotorOptimo;
+    _btnOptimo.title = 'Motor ÓPTIMO CP-SAT: 354/354 + patrón didáctico. Tarda ~5 min.';
+}
+
+    // ── Auto-expandir caja de errores cuando el contenido desborda ───────────
+    (function () {
+        const mainEl = document.querySelector('main');
+        const errDiv = document.getElementById('span_error');
+        if (!mainEl || !errDiv) return;
+
+        function ajustar() {
+            requestAnimationFrame(() => {
+                const desborda = errDiv.scrollHeight > errDiv.clientHeight + 4;
+                mainEl.classList.toggle('error-expandido', desborda);
+            });
+        }
+
+        new MutationObserver(ajustar).observe(errDiv, {
+            childList: true, subtree: true, characterData: true
+        });
+    })();
+
+    </script>
+</body>
+</html>

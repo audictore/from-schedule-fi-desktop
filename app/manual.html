@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual — From Schedule</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/Schedule FI BLACK.svg">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+        :root {
+            --color-yellow: #FCB814;
+            --color-black: #221F20;
+            --color-ghost-white: #F3F7FF;
+            --color-cerulean: #3D7B93;
+            --color-dim-gray: #636466;
+            --color-tomato: #F26649;
+            --color-celadon: #81C99C;
+            --color-gray-olive: #939598;
+            --color-soft-periwinkle: #8781BD;
+
+            --font-roboto-mono: "Roboto Mono", monospace;
+            --fs-xs:   0.7rem;
+            --fs-sm:   0.8rem;
+            --fs-base: 0.875rem;
+            --fs-md:   1rem;
+            --fs-lg:   1.15rem;
+            --fs-xl:   1.4rem;
+
+            --sp-1:  0.25rem;
+            --sp-2:  0.5rem;
+            --sp-3:  0.75rem;
+            --sp-4:  1rem;
+            --sp-6:  1.5rem;
+            --sp-8:  2rem;
+            --sp-12: 3rem;
+
+            --borde-fuerte: 3px solid var(--color-black);
+            --borde-medio:  2px solid var(--color-black);
+            --borde-fino:   1px solid var(--color-black);
+            --sombra-lg: 5px 5px 0 0 var(--color-gray-olive);
+            --sombra-sm: 3px 3px 0 0 var(--color-black);
+
+            --header-h: 3.5rem;
+            --content-w: 760px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; border-radius: 0 !important; }
+
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            font-family: var(--font-roboto-mono);
+            background: var(--color-ghost-white);
+            color: var(--color-black);
+        }
+
+        /* ── Header ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            height: var(--header-h);
+            background: var(--color-yellow);
+            border-bottom: var(--borde-fuerte);
+        }
+        header nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 var(--sp-8);
+        }
+        header nav ul {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-6);
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        header nav ul a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--color-black);
+            font-weight: 700;
+            font-size: var(--fs-sm);
+        }
+        header nav ul:last-child a:last-child {
+            box-shadow: inset 0 -3px 0 0 var(--color-black);
+            padding-bottom: var(--sp-1);
+        }
+        header a img { height: 2rem; }
+
+        /* ── Main content ── */
+        main {
+            flex: 1 1 auto;
+            width: 100%;
+            max-width: var(--content-w);
+            margin: 0 auto;
+            padding: var(--sp-12) var(--sp-6);
+        }
+
+        /* ── Section cards ── */
+        .card {
+            background: #fff;
+            border: var(--borde-fuerte);
+            box-shadow: var(--sombra-lg);
+            padding: var(--sp-8);
+            margin-bottom: var(--sp-8);
+        }
+
+        .card h2 {
+            font-size: var(--fs-xl);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 var(--sp-6) 0;
+            padding-bottom: var(--sp-3);
+            border-bottom: 3px solid var(--color-yellow);
+        }
+
+        .card h3 {
+            font-size: var(--fs-md);
+            font-weight: 800;
+            margin: var(--sp-6) 0 var(--sp-3) 0;
+        }
+
+        .card p, .card li {
+            font-size: var(--fs-base);
+            line-height: 1.65;
+            color: var(--color-dim-gray);
+            margin: 0 0 var(--sp-4) 0;
+        }
+
+        .card ul, .card ol {
+            padding-left: var(--sp-6);
+            margin: 0 0 var(--sp-4) 0;
+        }
+
+        .card li { margin-bottom: var(--sp-2); }
+
+        .card strong { color: var(--color-black); }
+
+        .card code {
+            background: var(--color-yellow);
+            padding: 0.1rem 0.4rem;
+            font-size: var(--fs-sm);
+            font-weight: 700;
+            border: 1px solid var(--color-black);
+        }
+
+        .highlight {
+            background: #FFF8E0;
+            border: var(--borde-medio);
+            padding: var(--sp-4) var(--sp-6);
+            margin: var(--sp-4) 0;
+        }
+        .highlight p:last-child { margin-bottom: 0; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem var(--sp-2);
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            vertical-align: middle;
+            border: var(--borde-medio);
+        }
+        .badge-pa  { background: var(--color-soft-periwinkle); color: #fff; }
+        .badge-ptc { background: var(--color-cerulean); color: #fff; }
+
+        .tabla-ejemplo {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--fs-sm);
+            border: var(--borde-fuerte);
+            margin: var(--sp-4) 0;
+        }
+        .tabla-ejemplo th,
+        .tabla-ejemplo td {
+            padding: var(--sp-2) var(--sp-3);
+            border: var(--borde-fino);
+            text-align: left;
+        }
+        .tabla-ejemplo thead th {
+            background: var(--color-black);
+            color: var(--color-yellow);
+            font-weight: 700;
+            font-size: var(--fs-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .tabla-ejemplo tbody td { background: #fff; }
+
+        .steps { counter-reset: step; list-style: none; padding-left: 0; }
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding-left: var(--sp-12);
+            margin-bottom: var(--sp-6);
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2rem;
+            height: 2rem;
+            background: var(--color-yellow);
+            border: var(--borde-medio);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: var(--fs-base);
+        }
+
+        .page-title {
+            font-size: var(--fs-xl);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 var(--sp-4) 0;
+        }
+        .page-subtitle {
+            font-size: var(--fs-base);
+            color: var(--color-dim-gray);
+            margin: 0 0 var(--sp-12) 0;
+            line-height: 1.6;
+        }
+
+        /* ── Footer ── */
+        footer {
+            background: var(--color-black);
+            border-top: var(--borde-fuerte);
+            padding: var(--sp-8) var(--sp-8) var(--sp-6);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--sp-4);
+        }
+        footer a.a_que_es {
+            font-family: var(--font-roboto-mono);
+            font-size: var(--fs-sm);
+            font-weight: 700;
+            color: var(--color-ghost-white);
+            text-decoration: none;
+            margin-right: auto;
+        }
+        footer a.a_que_es:hover { color: var(--color-yellow); }
+        footer img.img_logo_FI { height: 1.5rem; }
+        footer a img { width: 1.5rem; height: 1.5rem; opacity: 0.7; transition: opacity 0.15s; }
+        footer a:hover img { opacity: 1; }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-2);
+            margin-top: var(--sp-3);
+            padding: var(--sp-2) var(--sp-4);
+            font-family: var(--font-roboto-mono);
+            font-size: var(--fs-xs);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            color: var(--color-black);
+            background: var(--color-yellow);
+            border: var(--borde-medio);
+            box-shadow: var(--sombra-sm);
+            cursor: pointer;
+            transition: box-shadow 0.1s, transform 0.1s;
+        }
+        .btn-download:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 0 var(--color-black);
+        }
+        .btn-download:active {
+            transform: translate(3px, 3px);
+            box-shadow: none;
+        }
+        .btn-download svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--color-black);
+        }
+
+        @media (max-width: 860px) {
+            header nav { padding: 0 var(--sp-4); }
+            header nav ul { gap: var(--sp-3); }
+            main { padding: var(--sp-6) var(--sp-4); }
+            .card { padding: var(--sp-6); overflow-x: auto; }
+            footer { padding: var(--sp-6) var(--sp-4); }
+        }
+
+        @media (max-width: 480px) {
+            :root { --header-h: 3rem; }
+            header nav { padding: 0 var(--sp-3); }
+            header nav ul { gap: var(--sp-2); }
+            header nav ul a { font-size: var(--fs-xs); }
+            header a img { height: 1.5rem; }
+            main { padding: var(--sp-4) var(--sp-3); }
+            .card { padding: var(--sp-4); }
+            .card h2 { font-size: var(--fs-lg); }
+            .page-title { font-size: var(--fs-lg); letter-spacing: 1px; }
+            .page-subtitle { font-size: var(--fs-sm); margin-bottom: var(--sp-6); }
+            .steps li { padding-left: var(--sp-8); margin-bottom: var(--sp-4); }
+            .steps li::before { width: 1.5rem; height: 1.5rem; font-size: var(--fs-sm); }
+            .highlight { padding: var(--sp-3) var(--sp-4); }
+            .highlight p { font-size: var(--fs-sm); }
+            .btn-download { font-size: 0.6rem; padding: var(--sp-2) var(--sp-3); }
+            .tabla-ejemplo { font-size: var(--fs-xs); }
+            .tabla-ejemplo th, .tabla-ejemplo td { padding: var(--sp-1) var(--sp-2); }
+            .badge { font-size: 0.55rem; }
+            footer { flex-direction: column; align-items: flex-start; padding: var(--sp-4) var(--sp-3); gap: var(--sp-3); }
+            footer a.a_que_es { margin-right: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <a href="index.html"><img src="assets/FI-LOGO-BRUTO-BLACK.svg" alt="LOGO"></a>
+            </ul>
+            <ul>
+                <a href="./index.html">Generador</a>
+                <a href="./manual.html">Manual</a>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1 class="page-title">Manual de usuario</h1>
+        <p class="page-subtitle">
+            From Schedule genera horarios completos a partir de dos archivos Excel.
+            El motor ÓPTIMO (CP-SAT) encuentra la mejor asignación posible respetando
+            todas las restricciones institucionales.
+        </p>
+
+        <!-- ─── FLUJO GENERAL ─── -->
+        <div class="card">
+            <h2>Flujo general</h2>
+            <ol class="steps">
+                <li>
+                    <strong>Sube la Carga Académica</strong> — archivo .xlsx con los docentes,
+                    sus categorías y las materias asignadas a cada grupo.<br>
+                    <a class="btn-download" href="./assets/Plantilla Carga Académica.xlsx" download><svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>Descargar plantilla</a>
+                </li>
+                <li>
+                    <strong>Sube las Disponibilidades</strong> — archivo .xlsx donde cada hoja
+                    es un docente y marca las horas disponibles por día.<br>
+                    <a class="btn-download" href="./assets/Plantilla Disponibilidades de horarios.xlsx" download><svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>Descargar plantilla</a>
+                </li>
+                <li>
+                    <strong>Sube las Aulas <em>(opcional)</em></strong> — archivo .xlsx con las aulas
+                    del plantel, qué materias necesitan un aula específica y el aula base de cada
+                    grupo. Si lo omites, el horario se genera igual sin asignar aulas.<br>
+                    <a class="btn-download" href="./assets/Plantilla Aulas.xlsx" download><svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>Descargar plantilla</a>
+                </li>
+                <li>
+                    <strong>Presiona GENERAR ÓPTIMO</strong> — el motor resuelve el horario
+                    (~3-5 min). El resultado aparece en el desglose y se descarga como Excel.
+                </li>
+            </ol>
+        </div>
+
+        <!-- ─── CARGA ACADÉMICA ─── -->
+        <div class="card">
+            <h2>Archivo 1: Carga Académica</h2>
+            <p>
+                Un archivo <code>.xlsx</code> con <strong>una sola hoja</strong>.
+                El sistema detecta automáticamente la fila que contiene el encabezado
+                <code>Profesor</code>.
+            </p>
+
+            <h3>Columnas requeridas</h3>
+            <table class="tabla-ejemplo">
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Contenido</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Profesor</strong></td>
+                        <td>Nombre completo del docente</td>
+                        <td>Horacio Sánchez Hernández</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CATEGORÍA</strong></td>
+                        <td><code>PA</code> para Profesor por Asignatura, cualquier otra cosa se interpreta como PTC</td>
+                        <td>PA</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Asignatura</strong></td>
+                        <td>Texto con formato: <code>Materia Grado°Grupo (Nhrs)</code>. Puede tener varias líneas.</td>
+                        <td>Contabilidad II 2°a (6 hrs)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Formato de Asignatura</h3>
+            <p>Cada línea dentro de la celda de Asignatura sigue el patrón:</p>
+            <div class="highlight">
+                <p><code>NombreMateria Grado°Grupos (Horas hrs)</code></p>
+                <p>
+                    <strong>Ejemplos:</strong><br>
+                    <code>Contabilidad II 2°a (6 hrs)</code> — 6 horas al grupo 2a<br>
+                    <code>Ingles 2 2°ab (9 hrs)</code> — 9 horas repartidas entre 2a y 2b<br>
+                    <code>Tutoria 2°a (2 hrs)</code> — tutoría de 2 horas
+                </p>
+            </div>
+
+            <p>
+                El <strong>turno</strong> se determina automáticamente por el grado:
+                semestres 1-4 son <strong>matutino</strong> (7:00-17:00),
+                semestres 5+ son <strong>vespertino</strong> (12:00-21:00).
+            </p>
+        </div>
+
+        <!-- ─── DISPONIBILIDADES ─── -->
+        <div class="card">
+            <h2>Archivo 2: Disponibilidades</h2>
+            <p>
+                Un archivo <code>.xlsx</code> con <strong>una hoja por docente</strong>.
+                El nombre de cada hoja debe coincidir (parcialmente) con el nombre del docente
+                en la Carga Académica.
+            </p>
+
+            <h3>Estructura de cada hoja</h3>
+            <table class="tabla-ejemplo">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                        <th>Sábado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>7:00</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td></td></tr>
+                    <tr><td>8:00</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td></td></tr>
+                    <tr><td>9:00</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td></td><td></td></tr>
+                    <tr><td>10:00</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td colspan="7" style="text-align:center;color:var(--color-dim-gray)">... (filas 11:00 a 20:00)</td></tr>
+                </tbody>
+            </table>
+
+            <div class="highlight">
+                <p>
+                    <strong>Celda con contenido</strong> = disponible (cualquier texto o símbolo sirve).<br>
+                    <strong>Celda vacía</strong> = no disponible.
+                </p>
+                <p>
+                    Las filas van de las <strong>7:00 a las 20:00</strong> (14 franjas horarias).
+                    Las columnas son <strong>Lunes a Sábado</strong> (6 días).
+                </p>
+            </div>
+        </div>
+
+        <!-- ─── AULAS ─── -->
+        <div class="card">
+            <h2>Archivo 3: Aulas <em>(opcional)</em></h2>
+            <p>
+                Un archivo <code>.xlsx</code> con <strong>hasta tres hojas</strong>. Sirve para
+                que el motor asigne aulas a cada clase. Es <strong>opcional</strong>: si no lo
+                subes, el horario se genera igual, solo sin aula asignada.
+            </p>
+
+            <h3>Hoja 1 — Aulas</h3>
+            <p>La lista de aulas del plantel y su tipo.</p>
+            <table class="tabla-ejemplo">
+                <thead>
+                    <tr><th>Nombre</th><th>Tipo</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Aula 9</td><td>normal</td></tr>
+                    <tr><td>Multimedia 1</td><td>multimedia</td></tr>
+                    <tr><td>LEGO</td><td>multiusos</td></tr>
+                </tbody>
+            </table>
+            <div class="highlight">
+                <p>
+                    El <strong>Tipo</strong> debe ser <code>normal</code>, <code>multimedia</code>
+                    o <code>multiusos</code>. Cualquier otro valor se toma como <code>normal</code>.
+                </p>
+            </div>
+
+            <h3>Hoja 2 — Asignaciones</h3>
+            <p>Qué aula (o tipo de aula) necesita cada materia.</p>
+            <table class="tabla-ejemplo">
+                <thead>
+                    <tr><th>Materia</th><th>Aula</th><th>Obligatorio</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Emprendimiento</td><td>Multimedia 1</td><td>sí</td></tr>
+                    <tr><td>Logistica administrativa</td><td>multiusos</td><td>no</td></tr>
+                </tbody>
+            </table>
+            <div class="highlight">
+                <p>
+                    En <strong>Aula</strong> puedes poner el <strong>nombre exacto</strong> de un
+                    aula (de la Hoja 1) o un <strong>tipo</strong>
+                    (<code>normal</code>/<code>multimedia</code>/<code>multiusos</code>): en ese
+                    caso vale cualquier aula de ese tipo.<br>
+                    <strong>Obligatorio</strong> = <code>sí</code> exige ese aula; <code>no</code>
+                    es solo una preferencia.
+                </p>
+            </div>
+
+            <h3>Hoja 3 — Aula base por grupo <em>(opcional)</em></h3>
+            <p>El aula fija donde un grupo toma la mayoría de sus clases.</p>
+            <table class="tabla-ejemplo">
+                <thead>
+                    <tr><th>Grupo</th><th>Aula</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>8a</td><td>Aula 9</td></tr>
+                    <tr><td>2b</td><td>Aula 16</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ─── TIPOS DE DOCENTE ─── -->
+        <div class="card">
+            <h2>Tipos de docente</h2>
+            <p>El sistema distingue dos categorías principales de docente:</p>
+
+            <h3><span class="badge badge-pa">PA</span> Profesor por Asignatura</h3>
+            <p>
+                Docente que asiste solo a impartir sus horas-clase.
+                El sistema <strong>minimiza sus días de asistencia</strong> según su carga
+                usando un <strong>escalón institucional</strong>.
+            </p>
+
+            <h3>¿Qué es el escalón?</h3>
+            <p>
+                El escalón es la regla que limita cuántos días a la semana puede asistir
+                un docente PA, según el total de horas que imparte:
+            </p>
+            <table class="tabla-ejemplo">
+                <thead><tr><th>Escalón</th><th>Carga semanal</th><th>Días máximos</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>2</strong></td><td>1 - 9 horas</td><td>2 días</td></tr>
+                    <tr><td><strong>3</strong></td><td>10 - 20 horas</td><td>3 días</td></tr>
+                    <tr><td><strong>4</strong></td><td>21+ horas</td><td>4 días</td></tr>
+                </tbody>
+            </table>
+            <div class="highlight">
+                <p>
+                    <strong>Ejemplo:</strong> un docente PA con 12 horas semanales tiene
+                    escalón 3 — el sistema solo puede colocar sus clases en un máximo
+                    de 3 días distintos de la semana.
+                </p>
+            </div>
+
+            <h3>Días extra autorizados</h3>
+            <p>
+                A veces el escalón puro no alcanza: si un docente PA tiene muchos grupos
+                en turnos distintos o disponibilidad muy limitada, el solver puede no
+                lograr colocar todas sus horas en los días permitidos.
+            </p>
+            <p>
+                Para esto existe el panel <strong>Días extra autorizados por docente</strong>
+                en la pantalla del generador. Ahí puedes conceder <strong>+1, +2 o +3 días
+                adicionales</strong> sobre el escalón base de cada docente PA.
+            </p>
+            <div class="highlight">
+                <p>
+                    <strong>¿Cómo funciona?</strong> Junto a cada docente PA aparece un selector
+                    con su carga y escalón actual (ej: <code>19h · escalón 3</code>).
+                    Si el sistema detecta que necesita más días, muestra la etiqueta
+                    <strong style="color:var(--color-tomato)">sugerido +2</strong> en rojo.
+                    Tú decides si aceptas la sugerencia ajustando el selector a <code>+1</code>,
+                    <code>+2</code> o <code>+3</code> y vuelves a generar.
+                </p>
+            </div>
+            <p>
+                Los días extra autorizados se guardan automáticamente en el navegador,
+                así no necesitas configurarlos de nuevo en cada sesión.
+            </p>
+
+            <h3><span class="badge badge-ptc">PTC</span> Profesor de Tiempo Completo</h3>
+            <p>
+                Docente con jornada completa. Incluye categorías como
+                <strong>PTC Investigador</strong>, <strong>Director</strong>, etc.
+                No tiene restricción de días — puede impartir clase cualquier día disponible.
+                Se escribe cualquier categoría distinta de <code>PA</code> en la columna CATEGORÍA.
+            </p>
+        </div>
+
+        <!-- ─── MOTOR ÓPTIMO ─── -->
+        <div class="card">
+            <h2>Motor ÓPTIMO</h2>
+            <p>
+                El motor utiliza <strong>CP-SAT</strong> (OR-Tools) para encontrar la
+                asignación que maximiza las horas colocadas respetando todas las
+                restricciones simultáneamente:
+            </p>
+
+            <h3>Restricciones duras (inquebrantables)</h3>
+            <ul>
+                <li>No hay solapes: un docente o grupo no puede tener dos clases a la misma hora</li>
+                <li>Se respeta la disponibilidad declarada de cada docente</li>
+                <li>Bloques de máximo 2 horas consecutivas por materia (patrón didáctico)</li>
+                <li>Cero huecos en el horario de cada grupo (jornada continua)</li>
+                <li>Escalón de días PA (2/3/4 días según carga)</li>
+                <li>Máximo 3 horas muertas por semana para docentes PA</li>
+                <li>Inglés simultáneo: semestres pares se sincronizan</li>
+            </ul>
+
+            <h3>Preferencias (el solver las optimiza)</h3>
+            <ul>
+                <li><strong>Días parejos</strong> — distribuir las horas del grupo uniformemente entre días</li>
+                <li><strong>Mínimo 3h/día por docente</strong> — evitar que un docente asista solo por 1 hora</li>
+                <li><strong>Minimizar huecos de docente</strong> — reducir tiempos muertos entre clases</li>
+                <li><strong>Márgenes de jornada</strong> — grupos matutinos empiezan a las 7:00, vespertinos terminan a las 21:00</li>
+            </ul>
+
+            <div class="highlight">
+                <p>
+                    El solver tarda aproximadamente <strong>3-5 minutos</strong>.
+                    Primero verifica que el 100% de horas es factible (fase 1),
+                    luego optimiza la calidad del horario (fase 2).
+                </p>
+            </div>
+        </div>
+
+        <!-- ─── RESULTADO ─── -->
+        <div class="card">
+            <h2>Resultado</h2>
+            <p>Al terminar, el sistema muestra:</p>
+
+            <h3>Desglose</h3>
+            <p>
+                Tabla interactiva con todos los grupos, materias, docentes y horas asignadas.
+                Aquí también encuentras el panel de <strong>Días extra autorizados</strong>
+                para ajustar el escalón PA si es necesario.
+            </p>
+
+            <h3>Excel descargable</h3>
+            <p>
+                Se genera automáticamente un archivo <code>Horarios Generados.xlsx</code> con:
+            </p>
+            <ul>
+                <li><strong>Una hoja por grupo</strong> — tabla HORA x DÍA con materia y docente</li>
+                <li><strong>Una hoja por docente</strong> — su horario semanal completo</li>
+                <li>Celdas coloreadas por materia para identificación visual rápida</li>
+                <li>Totales de horas por semana al final de cada hoja</li>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer>
+        <a class="a_que_es" href="./que_es.html">¿Que es FROM SCHEDULE?</a>
+        <img class="img_logo_FI" src="./assets/LOGO-FI-BRUTO-YELLOW.png" alt="">
+        <a class="a_instagram" href="https://www.instagram.com/fromindustries?igsh=MWRkNHZ6MWI5OWN0Yg=="><img class="img_instagram" src="./assets/logotipo-de-instagram.png" alt=""></a>
+        <a class="a_mail" href=""><img class="img_mail" src="./assets/correo-electronico.png" alt=""></a>
+    </footer>
+
+</body>
+</html>
