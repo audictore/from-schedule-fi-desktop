@@ -247,10 +247,14 @@ def resolver(D):
                - 100 * sum(hueco_doc_terms)
                - 200 * sum(corto_doc_terms) - sum(margen_terms))
 
-    emit('progress', msg=f'Resolviendo ({max_time}s máx)…')
+    # Usa todos los núcleos de la máquina (más workers = búsqueda más fuerte).
+    # En una laptop de 8 hilos = 8; en un Ryzen 5 5600 (12 hilos) = 12; tope 24.
+    n_workers = max(4, min(os.cpu_count() or 8, 24))
+    sys.stderr.write(f'[solver] num_search_workers={n_workers} (cpu_count={os.cpu_count()})\n'); sys.stderr.flush()
+    emit('progress', msg=f'Resolviendo ({max_time}s máx, {n_workers} núcleos)…')
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = max_time
-    solver.parameters.num_search_workers = 8
+    solver.parameters.num_search_workers = n_workers
     solver.parameters.random_seed = 42
     stop = threading.Event()
     tk = threading.Thread(target=progress_ticker, args=(max_time, stop), daemon=True)
