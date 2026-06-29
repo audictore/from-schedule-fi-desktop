@@ -1,9 +1,32 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { autoUpdater } = require('electron-updater');
 const { solveCPSAT, cancelSolve } = require('./solver');
 
 let mainWindow;
+
+// ── Auto-actualización ──────────────────────────────────────────────────────
+// Al abrir (solo en la app instalada), revisa GitHub Releases del repo público
+// from-schedule-fi-releases. Si hay versión nueva, la descarga y ofrece reiniciar.
+function setupAutoUpdater() {
+  if (!app.isPackaged) return; // en desarrollo no aplica
+  autoUpdater.autoDownload = true;
+  autoUpdater.on('update-downloaded', (info) => {
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      buttons: ['Reiniciar ahora', 'Más tarde'],
+      defaultId: 0,
+      title: 'Actualización disponible',
+      message: `Hay una nueva versión (${info.version}) lista.`,
+      detail: 'Se instalará al reiniciar la aplicación.'
+    }).then((r) => { if (r.response === 0) autoUpdater.quitAndInstall(); });
+  });
+  autoUpdater.on('error', (err) => {
+    console.error('[auto-update] error:', err == null ? 'desconocido' : (err.message || err));
+  });
+  autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+}
 
 function createWindow() {
   // Identidad de la app en Windows (agrupa la ventana y usa el icono correcto en la barra).
@@ -74,7 +97,10 @@ function createWindow() {
   Menu.setApplicationMenu(menu);
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  setupAutoUpdater();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
