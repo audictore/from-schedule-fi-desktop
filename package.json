@@ -1,6 +1,6 @@
 {
   "name": "from-schedule-fi",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Generador de horarios universitarios — From Schedule FI",
   "main": "electron/main.js",
   "scripts": {
@@ -26,6 +26,7 @@
   "build": {
     "appId": "com.fromindustries.schedule",
     "productName": "From Schedule FI",
+    "artifactName": "From-Schedule-FI-Setup.${ext}",
     "directories": {
       "output": "dist"
     },
