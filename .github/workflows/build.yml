@@ -59,3 +59,12 @@ jobs:
             dist/*.exe
             dist/*.blockmap
           if-no-files-found: error
+
+      - name: Subir el icono generado
+        uses: actions/upload-artifact@v4
+        with:
+          name: icono
+          path: |
+            assets/icon.ico
+            assets/icon.png
+          if-no-files-found: error
