@@ -6,12 +6,16 @@ const { solveCPSAT, cancelSolve } = require('./solver');
 let mainWindow;
 
 function createWindow() {
+  // Identidad de la app en Windows (agrupa la ventana y usa el icono correcto en la barra).
+  if (process.platform === 'win32') app.setAppUserModelId('com.fromindustries.schedule');
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
     title: 'From Schedule FI',
+    icon: path.join(__dirname, '..', 'assets', 'icon.ico'),  // icono de ventana/barra (modo dev)
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

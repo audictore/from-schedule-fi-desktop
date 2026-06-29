@@ -31,6 +31,7 @@
     "files": [
       "electron/**/*",
       "app/**/*",
+      "assets/icon.*",
       "node_modules/**/*"
     ],
     "extraResources": [
