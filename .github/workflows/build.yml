@@ -35,13 +35,11 @@ jobs:
         working-directory: solver
         run: pyinstaller --noconfirm solver_ipc.spec --distpath dist --workpath build
 
-      - name: Generar el icono de la app
-        run: |
-          pip install Pillow
-          python scripts/make_icon.py
-
       - name: Instalar dependencias de Node
         run: npm ci
+
+      - name: Generar el icono de la app (desde el SVG)
+        run: node scripts/make_icon.js
 
       - name: Construir el instalador (electron-builder)
         # --publish never: solo construir el .exe, sin intentar publicarlo en un release

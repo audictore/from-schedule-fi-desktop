@@ -15,7 +15,9 @@
   "private": true,
   "devDependencies": {
     "electron": "^33.4.11",
-    "electron-builder": "^25.0.0"
+    "electron-builder": "^25.0.0",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.33.5"
   },
   "dependencies": {
     "xlsx-js-style": "^1.2.0"
