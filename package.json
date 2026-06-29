@@ -32,7 +32,8 @@
     "publish": {
       "provider": "github",
       "owner": "audictore",
-      "repo": "from-schedule-fi-releases"
+      "repo": "from-schedule-fi-releases",
+      "releaseType": "release"
     },
     "files": [
       "electron/**/*",
