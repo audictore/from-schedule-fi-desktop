@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 const { solveCPSAT, cancelSolve } = require('./solver');
+const license = require('./license');
+const institutional = require('./institutional');
 
 let mainWindow;
 
@@ -81,6 +83,11 @@ function createWindow() {
       label: 'Ayuda',
       submenu: [
         {
+          label: 'Activar licencia...',
+          click: () => mainWindow.webContents.send('show-license')
+        },
+        { type: 'separator' },
+        {
           label: 'Acerca de From Schedule FI',
           click: () => {
             dialog.showMessageBox(mainWindow, {
@@ -145,3 +152,13 @@ ipcMain.handle('file-read', async (event, filePath) => {
     return { ok: false, error: err.message };
   }
 });
+
+// ── Licencias ────────────────────────────────────────────────────────────────
+ipcMain.handle('license-status', () => license.getStatus());
+ipcMain.handle('license-activate', (_, key) => license.activate(key));
+ipcMain.handle('license-deactivate', () => license.deactivate());
+
+// ── Institucional ────────────────────────────────────────────────────────────
+ipcMain.handle('institutional:getConfig', () => institutional.getConfig());
+ipcMain.handle('institutional:setConfig', (_, data) => institutional.setConfig(data));
+ipcMain.handle('institutional:publish', (_, data) => institutional.publish(data.horario, data.periodo));

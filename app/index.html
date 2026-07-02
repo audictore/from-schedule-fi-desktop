@@ -382,10 +382,97 @@
             footer { flex-direction: column; align-items: flex-start; padding: var(--sp-4) var(--sp-3); gap: var(--sp-3); }
             footer a.a_que_es { margin-right: 0; }
         }
+        /* ── License overlay ────────────────────────────────── */
+        .license-overlay {
+            position: fixed; inset: 0; z-index: 100;
+            background: rgba(34,31,32,0.85);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .license-overlay.hidden { display: none; }
+        .license-box {
+            background: var(--color-ghost-white);
+            border: var(--borde-fuerte);
+            box-shadow: 8px 8px 0 0 var(--color-gray-olive);
+            padding: var(--sp-8);
+            width: 420px; max-width: 90vw;
+            text-align: center;
+        }
+        .license-box h2 {
+            font-size: var(--fs-lg); font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin: 0 0 var(--sp-2) 0;
+        }
+        .license-box p {
+            font-size: var(--fs-sm); color: var(--color-dim-gray);
+            margin: 0 0 var(--sp-6) 0; line-height: 1.5;
+        }
+        .license-box input {
+            width: 100%; padding: var(--sp-3) var(--sp-4);
+            font-family: var(--font-roboto-mono); font-size: var(--fs-base);
+            font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            text-align: center;
+            border: var(--borde-medio); background: #fff;
+            outline: none;
+        }
+        .license-box input:focus { border-color: var(--color-yellow); }
+        .license-box input::placeholder {
+            text-transform: none; letter-spacing: 0; font-weight: 400;
+            color: var(--color-gray-olive);
+        }
+        .license-btn {
+            display: block; width: 100%;
+            margin-top: var(--sp-4); padding: var(--sp-3);
+            font-family: var(--font-roboto-mono); font-size: var(--fs-sm);
+            font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            cursor: pointer; border: var(--borde-medio);
+            background: var(--color-yellow); color: var(--color-black);
+            box-shadow: var(--sombra-sm);
+            transition: box-shadow 0.1s, transform 0.1s;
+        }
+        .license-btn:hover { transform: translate(1px,1px); box-shadow: 2px 2px 0 0 var(--color-black); }
+        .license-btn:active { transform: translate(3px,3px); box-shadow: none; }
+        .license-btn:disabled { opacity: 0.5; cursor: default; transform: none; box-shadow: var(--sombra-sm); }
+        .license-skip {
+            display: inline-block; margin-top: var(--sp-4);
+            font-size: var(--fs-xs); color: var(--color-dim-gray);
+            cursor: pointer; text-decoration: underline;
+            background: none; border: none; font-family: var(--font-roboto-mono);
+        }
+        .license-skip:hover { color: var(--color-black); }
+        .license-error {
+            margin-top: var(--sp-3); padding: var(--sp-2) var(--sp-3);
+            font-size: var(--fs-xs); font-weight: 700;
+            color: #fff; background: var(--color-tomato);
+            border: var(--borde-fino);
+            display: none;
+        }
+        .license-trial-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+            background: var(--color-black); color: var(--color-yellow);
+            font-size: var(--fs-xs); font-weight: 700;
+            text-align: center; padding: var(--sp-1) var(--sp-4);
+            letter-spacing: 0.5px;
+        }
+        .license-trial-bar.hidden { display: none; }
     </style>
 
 </head>
 <body>
+
+    <!-- ── License activation overlay ── -->
+    <div class="license-overlay hidden" id="licenseOverlay">
+        <div class="license-box">
+            <h2>From Schedule FI</h2>
+            <p>Ingresa tu clave de licencia para activar el producto.</p>
+            <input type="text" id="licenseKeyInput" placeholder="FSFI-XXXX-XXXX-XXXX" maxlength="19" spellcheck="false" autocomplete="off">
+            <div class="license-error" id="licenseError"></div>
+            <button class="license-btn" id="licenseActivateBtn">Activar</button>
+            <button class="license-skip" id="licenseSkipBtn">Continuar sin licencia</button>
+        </div>
+    </div>
+    <div class="license-trial-bar hidden" id="licenseTrialBar">
+        Versión de prueba — <a style="color:var(--color-yellow);cursor:pointer" id="licenseTrialActivate">Activar licencia</a>
+    </div>
 
     <header>
         <nav>
@@ -1718,6 +1805,37 @@ async function ejecutarMotorOptimo() {
         }
         const seg = r.segundos != null ? r.segundos : ((Date.now() - t0) / 1000).toFixed(1);
         out.innerHTML = ESTILO_CSP + `<div class="csp-box ${completo ? 'csp-ok' : 'csp-warn'}">${completo ? '✅ 100% — patrón didáctico' : '◑ máximo posible'}: <b>${r.colocadas}/${r.total}h</b> · ${seg}s · CP-SAT${r.optimo ? ' (óptimo demostrado)' : ''}. Huecos: ${r.huecos || 0}. El horario y el Excel aparecen abajo.</div>`;
+        if (window.electronAPI?.institutional) {
+            const instConfig = await window.electronAPI.institutional.getConfig();
+            if (instConfig?.apiToken) {
+                const pubBtn = document.createElement('button');
+                pubBtn.className = 'button_accion';
+                pubBtn.style.cssText = 'margin-top:0.6rem;background:#3D7B93;color:#fff;border:none;padding:0.5rem 1.2rem;border-radius:0.4rem;cursor:pointer;font-weight:600';
+                pubBtn.textContent = 'Publicar al sistema escolar';
+                pubBtn.onclick = async () => {
+                    const periodo = prompt('Periodo academico (ej: 2025-2):', '');
+                    if (!periodo) return;
+                    let campus = instConfig.campus;
+                    if (!campus) {
+                        campus = prompt('Nombre del campus o facultad:', '');
+                        if (!campus) return;
+                        await window.electronAPI.institutional.setConfig({ campus });
+                    }
+                    pubBtn.disabled = true;
+                    pubBtn.textContent = 'Publicando...';
+                    const res = await window.electronAPI.institutional.publish({ horario: r, periodo });
+                    if (res.ok) {
+                        pubBtn.textContent = 'Publicado (' + res.entries + ' entradas)';
+                        pubBtn.style.background = '#2e7d32';
+                    } else {
+                        pubBtn.textContent = res.error;
+                        pubBtn.style.background = '#c62828';
+                        setTimeout(() => { pubBtn.textContent = 'Publicar al sistema escolar'; pubBtn.style.background = '#3D7B93'; pubBtn.disabled = false; }, 3000);
+                    }
+                };
+                out.appendChild(pubBtn);
+            }
+        }
     } catch (e) {
         detener();
         out.innerHTML = ESTILO_CSP + `<div class="csp-box csp-err">Error del solver: ${e.message}</div>`;
@@ -1820,6 +1938,64 @@ if (window.electronAPI) {
             childList: true, subtree: true, characterData: true
         });
     })();
+
+// ── Licencia ────────────────────────────────────────────────────────────────
+(async function initLicense() {
+    if (!window.electronAPI || !window.electronAPI.license) return;
+
+    const overlay = document.getElementById('licenseOverlay');
+    const trialBar = document.getElementById('licenseTrialBar');
+    const keyInput = document.getElementById('licenseKeyInput');
+    const activateBtn = document.getElementById('licenseActivateBtn');
+    const skipBtn = document.getElementById('licenseSkipBtn');
+    const errorDiv = document.getElementById('licenseError');
+    const trialActivate = document.getElementById('licenseTrialActivate');
+
+    function showOverlay() { overlay.classList.remove('hidden'); }
+    function hideOverlay() { overlay.classList.add('hidden'); }
+    function showTrial() { trialBar.classList.remove('hidden'); }
+    function hideTrial() { trialBar.classList.add('hidden'); }
+    function showError(msg) { errorDiv.textContent = msg; errorDiv.style.display = 'block'; }
+    function hideError() { errorDiv.style.display = 'none'; }
+
+    // Formatear clave mientras se escribe: FSFI-XXXX-XXXX-XXXX
+    keyInput.addEventListener('input', () => {
+        let v = keyInput.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        if (v.length > 4) v = v.slice(0,4) + '-' + v.slice(4);
+        if (v.length > 9) v = v.slice(0,9) + '-' + v.slice(9);
+        if (v.length > 14) v = v.slice(0,14) + '-' + v.slice(14);
+        if (v.length > 19) v = v.slice(0,19);
+        keyInput.value = v;
+    });
+
+    async function doActivate() {
+        const key = keyInput.value.trim();
+        if (!key || key.length < 17) { showError('Ingresa una clave válida'); return; }
+        hideError();
+        activateBtn.disabled = true;
+        activateBtn.textContent = 'Activando…';
+        const r = await window.electronAPI.license.activate(key);
+        activateBtn.disabled = false;
+        activateBtn.textContent = 'Activar';
+        if (r.active) {
+            hideOverlay();
+            hideTrial();
+        } else {
+            showError(r.error || 'Clave inválida');
+        }
+    }
+
+    activateBtn.addEventListener('click', doActivate);
+    keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doActivate(); });
+    skipBtn.addEventListener('click', () => { hideOverlay(); showTrial(); });
+    trialActivate.addEventListener('click', () => { showOverlay(); hideTrial(); });
+    if (window.electronAPI.onShowLicense) {
+        window.electronAPI.onShowLicense(() => { showOverlay(); hideTrial(); });
+    }
+
+    const status = await window.electronAPI.license.getStatus();
+    if (!status.active) showOverlay();
+})();
 
     </script>
 </body>
